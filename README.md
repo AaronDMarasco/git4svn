@@ -1,14 +1,15 @@
 # Yet Another git Guide for svn Users
 
-Table of Contents
-=================
-
+## Table of Contents
    * [Yet Another git Guide for svn Users](#yet-another-git-guide-for-svn-users)
+   * [Table of Contents](#table-of-contents)
       * [Why (An Intro)?](#why-an-intro)
+   * [TODO](#todo)
+      * [Squashing Commits - An Example](#squashing-commits---an-example)
+      * [What's Not Here](#whats-not-here)
    * [Other Resources](#other-resources)
       * [Learning Git](#learning-git)
       * [Tools and Setup](#tools-and-setup)
-      * [What's Not Here](#whats-not-here)
       * [Special Thanks](#special-thanks)
       * [TODOs](#todos)
          * [Once back at work](#once-back-at-work)
@@ -76,11 +77,11 @@ In my previous office, we had "free reign" so I was able to use any tools I want
    * Add the following to your `~/.bashrc` file to get immediate feedback from the shell concerning the status of your working copy:
 ```
 if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
-. /usr/share/git-core/contrib/completion/git-prompt.sh
-export GIT_PS1_SHOWDIRTYSTATE=1
-export GIT_PS1_SHOWCOLORHINTS=1
-export GIT_PS1_SHOWUPSTREAM="auto"
-PROMPT_COMMAND='history -a;__git_ps1 "\u@\h:\w" "\\\$ "'
+  . /usr/share/git-core/contrib/completion/git-prompt.sh
+  export GIT_PS1_SHOWDIRTYSTATE=1
+  export GIT_PS1_SHOWCOLORHINTS=1
+  export GIT_PS1_SHOWUPSTREAM="auto"
+  PROMPT_COMMAND='history -a;__git_ps1 "\u@\h:\w" "\\\$ "'
 fi
 ```
 * Some settings to add to your `~/.gitconfig` for some nice aliases:
@@ -99,9 +100,9 @@ $ git config --global merge.tool meld
 ```
 
 ## Special Thanks
- * [Dillinger](https://dillinger.io/), an online Markdown editor
+ * [Dillinger](https://dillinger.io/) an online Markdown editor
  * [WebGraphviz](http://www.webgraphviz.com/) for online Graphviz graphics
- * [gh-md-toc](https://github.com/ekalinin/github-markdown-toc)
+ * [gh-md-toc](https://github.com/ekalinin/github-markdown-toc) for the (offline) generation of the Table of Contents
 
 ## TODOs
  * Anywhere
