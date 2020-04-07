@@ -39,7 +39,9 @@ I don't have them in a git repository yet, so I will create one. Details omitted
  * `git` beings to create a new revision, called _the index_, and adds the contents of `LICENSE` and `README.md` to it _immediately_.
 
 Why did I emphasise the word _immediately_? Because `svn add` says "from now on, I need to start watching `LICENSE` and `README.md`", while `git add` _stages_ the contents of the files in the index. If I then do `echo FOO >> README.md`, a commit in `svn` would have "FOO" added to the end of the file. In `git`, the `add` adds a snapshot of the file _now_. I'll try to illustrate it a little:
+
 ![repo shown with arrows](img/repo_index.png)
+
 After that set of commands, the index has the original file, while the file system has the new "FOO" at the end:
 ```
 $ git diff
@@ -131,11 +133,11 @@ fi
 * Some settings to add to your `~/.gitconfig` for some nice aliases:
 ```
 [branch]
-autosetuprebase = always
+    autosetuprebase = always
 [alias]
-last = log -1 HEAD
-g = grep --break --heading --line-number -i
-lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --full-history --simplify-merges
+    last = log -1 HEAD
+    g = grep --break --heading --line-number -i
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --full-history --simplify-merges
 ```
 * `meld` as your merge resolver (when conflicts occur, running `git mergetool` will launch)
 ```
