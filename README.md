@@ -19,8 +19,52 @@ Thanks to the COVID-19 pandemic, I'm stuck at home. My work team is migrating fr
 
 There are many sites out there that cover similar things, but many seem to be "how to migrate a repo" or simple [cheat sheets](https://www.git-tower.com/blog/git-for-subversion-users-cheat-sheet/). I want a simple set of things I can present over a lunch session or two.
 
-# TODO
-(Actual meat here)
+## Terminology
+We know every technical thing has to have its own jargon and lingo, and there is some overlap between the two. I'd like to make sure we're always on the same page. Here a few key terms and how they apply:
+| Term         | `svn`                                                  | `git`                                                                                                                          |
+|--------------|--------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------|
+| working copy | your local checkout                                    | N/A, but kinda the same                                                                                                        |
+| repository   | the One True Copy(TM)                                  | a _copy_ of the codebase; some people (incorrectly) say "_the repository_" to indicate a central copy, _e.g._ the repo on GitHub |
+| revision     | snapshot of the state of all files across all branches | snapshot of the file tree at any specific time                                                                                 |
+| branch       | another full copy of entire file tree                  | a pointer into a revision                                                                                                      |
+| index        | N/A                                                    | the "staging area" between your local file system (working copy-ish) and the repository                                        |
+
+## What is Happening
+Many of us learn better with example, so let's provide an example. This is my file tree:
+```
+LICENSE
+README.md
+```
+I don't have them in a git repository yet, so I will create one. Details omitted, because it's easy to search and not relevant here. Since the files are new to the repository, I need to `git add` them. What actually happens when I do that?
+ * `git` beings to create a new revision, called _the index_, and adds the contents of `LICENSE` and `README.md` to it _immediately_.
+
+Why did I emphasise the word _immediately_? Because `svn add` says "from now on, I need to start watching `LICENSE` and `README.md`", while `git add` _stages_ the contents of the files in the index. If I then do `echo FOO >> README.md`, a commit in `svn` would have "FOO" added to the end of the file. In `git`, the `add` adds a snapshot of the file _now_. I'll try to illustrate it a little:
+![repo shown with arrows][img/repo_index.png]
+After that set of commands, the index has the original file, while the file system has the new "FOO" at the end:
+```
+$ git diff
+diff --git a/README.md b/README.md
+index 1a29b06..24b5c0a 100644
+--- a/README.md
++++ b/README.md
+<extra info removed>
++FOO
+```
+And if we want to see "how much" has changed:
+```
+$ git diff --stat
+ README.md | 1 +
+ 1 file changed, 1 insertion(+)
+```
+Again, **the default of `git diff` tells you the difference between the file system and the index**. This is important, because `git commit` and `svn commit` are very similar, but act differently.
+
+The subversion mindset is "but these files changed, I want them checked in." The git mindset is "only check in the changes I explicitly tell you to." 
+
+# LEFT OFF HERE...
+Why? Now, to show you some of the power of the index.
+ - example with bouncing between commits for different reasons
+ - expand to branches
+ - show add -p
 
 ## Squashing Commits - An Example
 Squashing commits is a useful way to keep related changes within a single changeset for later examination. There are good arguments both _for_ squashing ("no need to see how the sausage was made and these intermediate changesets that make no sense on their own") and _against_ ("the way this document was tweaked is unique enough that I might want to reference that specific changeset later"). 
@@ -49,7 +93,7 @@ Don’t miss the "^" which indicates that the log should begin at the changeset 
 
 This will launch your editor. If your editor is git-savvy, it will note that your current commit format is invalid. Be sure to insert two lines into the beginning:
 1. Your one-line commit summary, used to generate log messages like the one currently being edited. It should probably be something like "Squashed commit of feature--cool-intro".
-1. A totally blank line.
+2. A totally blank line.
 
 ## What's Not Here
 There are some other things I've already documented on an internal wiki for my team that may interest public users; treat this as a breadcrumb that you might want to search the internet for more information:
@@ -101,10 +145,11 @@ $ git config --global merge.tool meld
 
 ## Special Thanks
  * [Dillinger](https://dillinger.io/) an online Markdown editor
+ * [Tables Generator](https://www.tablesgenerator.com/markdown_tables) for online table generation
  * [WebGraphviz](http://www.webgraphviz.com/) for online Graphviz graphics
  * [gh-md-toc](https://github.com/ekalinin/github-markdown-toc) for the (offline) generation of the Table of Contents
 
-## TODOs
+# TODOs
  * Anywhere
 * Speculative / trial branches super light weight
 * `git add -p`
