@@ -1,0 +1,8 @@
+digraph "relationship" {
+  rankdir=BT;
+  node [shape = polygon, size = 5]; repository
+  node [shape = circle];
+  localfs -> index [ label = "  (git diff)", dir = both ]
+  index -> repository [ label = "  (git diff --cached)", dir = both ]
+}
+
