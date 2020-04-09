@@ -161,12 +161,14 @@ Your branch is behind 'origin/branchA' by 1 commit, and can be fast-forwarded.
 
 nothing to commit, working tree clean
 ```
+![](img/after_fetch.png)
 
 ### git merge
 This command is usually used for another reason (which we'll touch on, but as an svn user, you already know). But, as noted above, `git merge` will merges two _revision_ into a single _revision_ and we want to merge "our" `branchA` (`24f3b8fecf`) with "their" `branchA` (`origin/branchA` or `fcbd2855f`). So to do that (assuming the local branch is already in `branchA`), we use the same merge command but the "target" of the merge looks special:
 ```
 $ git merge origin/branchA
 ```
+![](img/after_merge.png)
 
 ### git pull
 So that leaves us with `git pull`. It's basically a shortcut - it is _mostly_ equivalent to `git fetch && git merge origin/<branchname>`. As noted above, it is what you will do 99% of the time, and can be treated as a rough equivalent of `svn update`. The difference is that if the merge fails, the fetch did happen, so you can locally examine what is wrong, _e.g._:
@@ -179,6 +181,19 @@ _Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase`. If 
 ### git push
 
 ### git merge (part deux)
+There are actually three kinds of merges, and you should be familiar with them because they make things a lot easier to follow if used properly.
+1. The first kind of merge is a "fast-forward" merge:
+![](img/after_fetch.png)
+Since there are no changes in the local repository between what the upstream considers `branchA` and what we have as `branchA`, we can simply "fast forward" the reference to the new revision
+![](img/after_merge.png)
+2. The second kind of merge is a "standard" merge:
+![](img/remote_changes.png)
+For this, we both have changes, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
+![](img/remote_merged.png)
+Of course, this still needs to be _pushed_ as noted above.
+3. The last kind of merge is a "squashed" merge:
+![](img/squashed_merged.png)
+In this image, there's a dotted arrow between `7589a237e` and `2c57a9eec` because the merge happened and all the data is there, but the metadata doesn't record it. At this point, all the "my_work" and revisions `7589a237e` are now _orphans_ and are subject to garbage collection in the future.
 
 ### git checkout
 but i already know... nope! (move to top)
@@ -288,6 +303,7 @@ $ git config --global merge.tool meld
 * The Index
 * repo vs repo vs repo vs remotes
 * Squashing and FF
+* cherry-pick
  ### Once back at work
 * Name of other prompt program
 * update vs fetch vs pull
