@@ -131,7 +131,7 @@ This is another sticky point for svn users, so let's talk about what happens whe
 
 ![](img/repo_index_origin.png)
 
-`origin` is the default name for an upstream repository; the "main" copy hosted on a corporate server or GitHub, etc. It's where you originally "cloned" from above.
+`origin` is the default name for an upstream ("remote") repository; the "main" copy hosted on a corporate server or GitHub, etc. It's where you originally "cloned" from above.
 
 Earlier we talked about `git add` and how to put your changes into the index. If you then `git commit` them, they are put into _your_ repository. In subversion, it's _everybody's_ repository, so you know you were always working with the latest code (because you were forced to `svn update` before you could commit if you weren't!).
 
@@ -182,17 +182,17 @@ _Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase`. If 
 
 ### git merge (part deux)
 There are actually three kinds of merges, and you should be familiar with them because they make things a lot easier to follow if used properly.
-1. The first kind of merge is a "fast-forward" merge:
-![](img/after_fetch.png)
-Since there are no changes in the local repository between what the upstream considers `branchA` and what we have as `branchA`, we can simply "fast forward" the reference to the new revision
-![](img/after_merge.png)
+1. The first kind of merge is a "fast-forward" merge:  
+![](img/after_fetch.png)  
+Since there are no changes in the local repository between what the upstream considers `branchA` and what we have as `branchA`, we can simply "fast forward" the reference to the new revision:  
+![](img/after_merge.png)  
 2. The second kind of merge is a "standard" merge:
-![](img/remote_changes.png)
+![](img/remote_changes.png)  
 For this, we both have changes, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
-![](img/remote_merged.png)
+![](img/remote_merged.png)  
 Of course, this still needs to be _pushed_ as noted above.
 3. The last kind of merge is a "squashed" merge:
-![](img/squashed_merged.png)
+![](img/squashed_merge.png)  
 In this image, there's a dotted arrow between `7589a237e` and `2c57a9eec` because the merge happened and all the data is there, but the metadata doesn't record it. At this point, all the "my_work" and revisions `7589a237e` are now _orphans_ and are subject to garbage collection in the future.
 
 ### git checkout
