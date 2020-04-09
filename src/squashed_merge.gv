@@ -9,8 +9,7 @@ digraph "squashed_merge" {
   "24f3b8fecf" -> "my_work_1"
   "my_work_1" -> "my_work_2"
   "my_work_2" -> "my_work_3"
-  "my_work_3" -> "my_work_4"
-  "my_work_4" -> "7589a237e"
+  "my_work_3" -> "7589a237e"
   node [shape = none];
   HEAD -> "2c57a9eec" [style=dashed];
   "branchA" -> "2c57a9eec" [style=dashed];
