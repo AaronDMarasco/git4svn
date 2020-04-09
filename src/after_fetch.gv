@@ -4,9 +4,9 @@ digraph "after_fetch" {
   ancestor -> "24f3b8fecf"
   "24f3b8fecf" -> "fcbd2855f"
   node [shape = none];
-  HEAD -> "24f3b8fecf"
-  "branchA" -> "24f3b8fecf"
-  "origin/branchA" -> "fcbd2855f"
+  HEAD -> "24f3b8fecf" [style=dashed];
+  "branchA" -> "24f3b8fecf" [style=dashed];
+  "origin/branchA" -> "fcbd2855f" [style=dashed];
   {rank=max; ancestor; "24f3b8fecf"; "fcbd2855f"}
   {rank=min; HEAD; "branchA"; "origin/branchA"}
 }

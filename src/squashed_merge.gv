@@ -1,0 +1,18 @@
+digraph "squashed_merge" {
+  rankdir=LR;
+  node [shape = oval];
+  ancestor -> "24f3b8fecf"
+  "24f3b8fecf" -> "8dc42ffaa"
+  "8dc42ffaa" -> "fcbd2855f"
+  "fcbd2855f" -> "2c57a9eec"
+  "7589a237e" -> "2c57a9eec" [style=dashed, color="black:invis:black"];
+  "24f3b8fecf" -> "my_work_1"
+  "my_work_1" -> "my_work_2"
+  "my_work_2" -> "my_work_3"
+  "my_work_3" -> "my_work_4"
+  "my_work_4" -> "7589a237e"
+  node [shape = none];
+  HEAD -> "2c57a9eec" [style=dashed];
+  "branchA" -> "2c57a9eec" [style=dashed];
+  "origin/branchA" -> "fcbd2855f" [style=dashed];
+}
