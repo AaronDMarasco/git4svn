@@ -152,6 +152,17 @@ _This assumes you set `autosetuprebase` as noted in the Setup section._
 ### git fetch
 This will read all the changes from a remote repository (by default `origin`) and replicate them in the local repository. These revisions are _now all available_ immediately in our repository. _However_ they are _not_ expressed in our local filesystem. If I was working yesterday on a branch named `branchA`, and I pushed it to the server, the one revision `24f3b8fecf` in my repository is _referenced_ as my branch `branchA` and also `origin/branchA`. However, if my coworker made some changes this morning and pushed them, I just received them in my repostory. `branchA` on _my_ repository has not changed, but `origin/branchA` is now `fcbd2855f`.
 
+### git merge
+This command is usually used for another reason (which we'll touch on, but as an svn user, you already know). But, as noted above, `git merge` will merges two _revision_ into a single _revision_ and we want to merge "our" `branchA` (`24f3b8fecf`) with "their" `branchA` (`origin/branchA` or `fcbd2855f`). So to do that (assuming the local branch is already in `branchA`), we use the same merge command but the "target" of the merge looks special:
+```
+$ git merge origin/branchA
+```
+
+### git pull
+So that leaves us with `git pull`. It's basically a shortcut - it is equivalent to `git fetch && git merge origin/<branchname>`. It is what you will do 99% of the time, and can be treated as a rough equivalent of `svn update`. The difference is that if the merge fails, the fetch did happen, so you can locally examine what is wrong, _e.g._:
+```
+$ git diff 
+
 # LEFT OFF HERE...
 merge
 pull
