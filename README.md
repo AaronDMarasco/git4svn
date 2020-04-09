@@ -29,6 +29,8 @@ We know every technical thing has to have its own jargon and lingo, and there is
 | commit       | save your changes into a new revision for _everybody_ to immediately see | save your changes into a new revision _in your local repository_                                                                 |
 | index        | N/A                                                                      | the "staging area" between your local file system (working copy-ish) and the repository                                          |
 
+## TODO: Add reference / refs and put somewhere
+
 ## What is "The Index?"
 Many of us learn better with example, so let's provide an example. This is my file tree:
 ```
@@ -135,15 +137,17 @@ This is another sticky point for svn users, so let's talk about what happens whe
 
 Earlier we talked about `git add` and how to put your changes into the index. If you then `git commit` them, they are put into _your_ repository. In subversion, it's _everybody's_ repository, so you know you were always working with the latest code (because you were forced to `svn update` before you could commit if you weren't!).
 
+## TODO: Sort / rearrange table to sections below
 Terminology:
-| Command   | Usage                                                                          |
-|-----------|--------------------------------------------------------------------------------|
-| `add`     | adds a file to the index to be _committed_                                     |
-| `commit`  | writes a set of changes into the repository as a _revision_                    |
-| `fetch`   | synchronizes the database from a remote repository _to_ the local (read-only)  |
-| `merge`   | merges two _revisions_ into a single _revision_ (not _always_ a branch!)       |
-| `pull`    | combines fetch and merge into a single command                                 |
-| `push`    | synchronizes the database from a local repository _to_ the remote (write-only) |
+| Command    | Usage                                                                          |
+|------------|--------------------------------------------------------------------------------|
+| `checkout` | copies file(s) from the repository to the localfs                              |
+| `add`      | adds a file to the index to be _committed_                                     |
+| `commit`   | writes a set of changes into the repository as a _revision_                    |
+| `fetch`    | synchronizes the database from a remote repository _to_ the local (read-only)  |
+| `merge`    | merges two _revisions_ into a single _revision_ (not _always_ a branch!)       |
+| `pull`     | combines fetch and merge into a single command                                 |
+| `push`     | synchronizes the database from a local repository _to_ the remote (write-only) |
 
 _This assumes you set `autosetuprebase` as noted in the Setup section._
 
@@ -176,9 +180,54 @@ So that leaves us with `git pull`. It's basically a shortcut - it is _mostly_ eq
 $ git diff origin/branchA README.md
 ```
 Because (don't forget) your local repository has _all the information_.
-_Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase`. If you did, then it's actually doing a "`git rebase`" in between the `fetch` and `merge`. This makes our repo a lot cleaner and easier to follow. Essentially, it "rolls back" all your changes since you last synchronized to the upstream. Then, it updates your branch to match what is upstream. Once that is complete, it re-applies your changesets but based off of the "new" branch. If this is able to happen cleanly, then a merge revision was never needed.
+_Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase`. If you did, then it's actually doing a "`git rebase`" in between the `fetch` and `merge`. This makes our repo a lot cleaner and easier to follow. Essentially, it "rolls back" all your changes since you last synchronized to the upstream. Then, it updates your branch to match what is upstream. Once that is complete, it re-applies your changesets but based off of the "new" branch. If this is able to happen cleanly, then a merge revision was never needed. It will clearly tell you when it is doing it as well:
+```
+$ git pull --rebase  # This is your default if you set autosetuprebase
+remote: Enumerating objects: 8, done.
+remote: Counting objects: 100% (8/8), done.
+remote: Compressing objects: 100% (6/6), done.
+remote: Total 6 (delta 4), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (6/6), done.
+From https://github.com/AaronDMarasco/git4svn
+   eba6752..c44bf7f  branchA    -> origin/branchA
+First, rewinding head to replay your work on top of it...
+Applying: Image tweaked
+```
 
 ### git push
+This command simply sends your latest changes to the remote repository. If the remote has "moved on" past what your repo "knew" about, it will fail and require you to `pull` again. There are server-side hooks that may also reject your changes for various reasons (branch control, etc.).
+
+### git checkout
+This command is another source of confusion because subversion's `checkout` is _totally_ different (it's the same as `git clone`). As shown in the illustration above, `git checkout` checks _file(s)_ out of the repo. The normal 99.44% use case is to check out a branch to work on. When you want to create a new branch, you can add `-b` to the command and it will branch from wherever you are, including a "dirty" workspace. But yes, you can `checkout` a single file (and it will auto-`add`, which I don't like).
+```
+$ git checkout master README.md
+$ git status
+On branch branchA
+Your branch is up to date with 'origin/branchA'.
+
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+
+        modified:   README.md
+
+```
+This also covers the "just throw away everything I did to this file and bring it back to what's in the repo":
+```
+$ git checkout -- README.md
+$ git status
+On branch branchA
+Your branch is up to date with 'origin/branchA'.
+
+nothing to commit, working tree clean
+```
+
+#### Branches - A Diversion
+Branching is _yet another_ paradigm shift that you should embrace. With subversion, a new branch meant you sacrificed a ton of disk space and had to wait while things were copied, etc. Then when you re-build, all the files are new so `make` runs forever. In git, a branch is a 41-byte file because it's simply a _reference_ into the repository at a certain revision. This is why they are often referred to as "lightweight" and branching is _extremely encouraged_. Because of the decentralized nature of git, your branches are **unknown to anybody else unless you `push` them** to a remote repository. This means you can make branches for the tiniest of things if you think you would need to rollback. **You should almost always be working in a branch** even if it is local-only. You can always merge it back into the mainline development on your schedule and with your sanitized notes (see "squashed commits" elsewhere). For example, you may want to commit to your branch:
+1. Hourly. Seriously, you can then `diff` and see what you changed in the past hour.
+2. After code successfully compiled. Then you can always get back to it. **Do this _before_ trying to clean anything up.**
+3. When you're about to experiment with an alternative option with something.
+
+It's difficult to emphasize how much of a life-changer this can be until you actually start using it. Especially when you combine it with `git diff` to see the differences.
 
 ### git merge (part deux)
 There are actually three kinds of merges, and you should be familiar with them because they make things a lot easier to follow if used properly.
@@ -193,23 +242,7 @@ For this, we both have changes, so we need to create a new revision that merges 
 Of course, this still needs to be _pushed_ as noted above.
 3. The last kind of merge is a "squashed" merge:
 ![](img/squashed_merge.png)  
-In this image, there's a dotted arrow between `7589a237e` and `2c57a9eec` because the merge happened and all the data is there, but the metadata doesn't record it. At this point, all the "my_work" and revisions `7589a237e` are now _orphans_ and are subject to garbage collection in the future.
-
-### git checkout
-but i already know... nope! (move to top)
-
-
-# LEFT OFF HERE...
-merge
-pull
-push
-checkout
-
-
-Why? Now, to show you some of the power of the index.
- - example with bouncing between commits for different reasons
- - expand to branches
- - show add -p
+In this image, there's a dotted arrow between `7589a237e` and `2c57a9eec` because the merge happened and all the data is there, but the metadata _doesn't_ record it. The log message is (by default) a culmination of all the changesets in between. At this point, all the "my_work" and revisions `7589a237e` are now _orphans_ and are subject to garbage collection in the future. A much more detailed example of squashed merges (I'm a huge fan of them) is below.
 
 ## Squashing Commits - An Example
 Squashing commits is a useful way to keep related changes within a single changeset for later examination. There are good arguments both _for_ squashing ("no need to see how the sausage was made and these intermediate changesets that make no sense on their own") and _against_ ("the way this document was tweaked is unique enough that I might want to reference that specific changeset later"). 
@@ -240,7 +273,7 @@ This will launch your editor. If your editor is git-savvy, it will note that you
 1. Your one-line commit summary, used to generate log messages like the one currently being edited. It should probably be something like "Squashed commit of feature--cool-intro".
 2. A totally blank line.
 
-## What's Not Here
+# What's Not Here
 There are some other things I've already documented on an internal wiki for my team that may interest public users; treat this as a breadcrumb that you might want to search the internet for more information:
 * Using `git bisect` to automate finding where something is broken
 * Using `git bundle` when traveling and needing a minimal set of files with you
@@ -287,12 +320,11 @@ fi
 $ git config --global diff.tool meld
 $ git config --global merge.tool meld
 ```
-
 ## Special Thanks
  * [Dillinger](https://dillinger.io/) an online Markdown editor
+ * [gh-md-toc](https://github.com/ekalinin/github-markdown-toc) for the (offline) generation of the Table of Contents
  * [Tables Generator](https://www.tablesgenerator.com/markdown_tables) for online table generation
  * [WebGraphviz](http://www.webgraphviz.com/) for online Graphviz graphics
- * [gh-md-toc](https://github.com/ekalinin/github-markdown-toc) for the (offline) generation of the Table of Contents
 
 # TODOs
  * Anywhere
@@ -304,6 +336,7 @@ $ git config --global merge.tool meld
 * repo vs repo vs repo vs remotes
 * Squashing and FF
 * cherry-pick
+* refs
  ### Once back at work
 * Name of other prompt program
 * update vs fetch vs pull
