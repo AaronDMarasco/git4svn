@@ -235,6 +235,14 @@ There are actually three kinds of merges, and you should be familiar with them b
 ![](img/after_fetch.png)  
 Since there are no changes in the local repository between what the upstream considers `branchA` and what we have as `branchA`, we can simply "fast forward" the reference to the new revision:  
 ![](img/after_merge.png)  
+```
+$ git pull
+...
+Fast-forward
+ README.md | 91 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----------------------------
+ 1 file changed, 62 insertions(+), 29 deletions(-)
+Current branch branchA is up to date.
+```
 2. The second kind of merge is a "standard" merge:
 ![](img/remote_changes.png)  
 For this, we both have changes, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
