@@ -35,7 +35,6 @@
       * [Learning Git](#learning-git)
       * [Tools and Setup](#tools-and-setup)
       * [Special Thanks](#special-thanks)
-   * [TODO Once back at work](#todo-once-back-at-work)
 
 ## Why? (An Intro)
 Thanks to the COVID-19 pandemic, I'm stuck at home. My work team is migrating from `svn` to `git` and I was going to put together a brown bag or two for them, but since I'm doing it from home I'm able to put a copy on GitHub.
@@ -366,6 +365,7 @@ This command is how you access the documentation for git, _e.g._:
 * `git help diff`
 * `git help commit`
 * `git help checkout`
+* `git help`
 
 ## git grep
 If you're on a system that you cannot get `ripgrep` installed, then `git grep` is the next best thing. It's just like `grep -r` but will use all your available CPUs in parallel to search the repository database, which is insanely faster. By default it will only search actively-monitored files, but you can also ask it to search `--untracked` files as well.
@@ -458,7 +458,8 @@ $ git config --global merge.tool meld
  * [Tables Generator](https://www.tablesgenerator.com/markdown_tables) for online table generation
  * [WebGraphviz](http://www.webgraphviz.com/) for online Graphviz graphics
 
-# TODO Once back at work
+# TODO (Once back at work)
 * Name of other prompt program?
 * Verify `git lg`
 * Special `git grep` options / alias?
+* What CentOS RPM provided that contributed script? Tagged '???'
