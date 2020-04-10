@@ -1,8 +1,15 @@
 digraph "diffs" {
-  rankdir=BT;
-  node [shape = polygon, size = 5]; repository
-  node [shape = circle];
-  localfs -> index [label="  (git diff)", dir=both, style=dashed]
-  index -> repository [label="  (git diff --cached)", dir=both, style=dashed]
+  rankdir=LR;
+  node [shape = polygon]; repository
+  node [shape = circle]; index; localfs
+  node [shape = none];
+  gd [label="git diff"]
+  index -> gd [style=dashed, arrowhead=none]
+  gd -> localfs [style=dashed, arrowhead=none]
+  gdc [label = "git diff --cached"]
+  repository -> gdc [style=dashed, arrowhead=none]
+  gdc -> index [style=dashed, arrowhead=none]
+  localfs -> index [style=invisible, arrowhead=none, minlen=3]
+  index -> repository [style=invisible, arrowhead=none, minlen=3]
+  {rank=same; repository; index; localfs}
 }
-
