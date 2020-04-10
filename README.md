@@ -33,11 +33,11 @@ We know every technical thing has to have its own jargon and lingo, and there is
 ### References, Refs, Brances, and Tags (Oh My!)
 As noted above, a revision is a snapshot of _everything_ at a specific time. Each of these snapshots, when combined with their metadata (author, comment, ancestors, etc.), is hashed into a SHA-1 hash to create the unique identifier to label that revision.
 
-| Reference   | Location           | Use                                                                                               |
-|-------------|--------------------|---------------------------------------------------------------------------------------------------|
-| `HEAD`      | N/A                | Points to what the localfs is "based on" in the repository.                                       |
-| branch name | `.git/refs/heads/` | Points to the `HEAD` of the given branch. A new commit will move this to the new revision.        |
-| tag         | `.git/refs/tags/`  | Points to a specific revision. If currently `HEAD` of a branch, it will _not_ move on new commit. |
+| Reference   | Location                 | Use                                                                                                               |
+|-------------|--------------------------|-------------------------------------------------------------------------------------------------------------------|
+| `HEAD`      | N/A ("it's complicated") | Points to a specific revision in the repository that the localfs is "based on."                                   |
+| branch name | `.git/refs/heads/`       | Points to the `HEAD` of the given branch. A new commit to this ref will move ("follow") this to the new revision. |
+| tag         | `.git/refs/tags/`        | Points to a specific revision. If currently `HEAD` of a branch, it will _not_ move on a new commit.               |
 
 _Tags_ are special references that don't move, similar to subversion's tags. If you `cat` any of the files listed above, _e.g._ `.git/refs/heads/master`, you will see it is simply the 40-hex SHA-1 hash and a newline. 
 
@@ -175,17 +175,16 @@ This is another sticky point for svn users, so let's talk about what happens whe
 
 Earlier we talked about `git add` and how to put your changes into the index. If you then `git commit` them, they are put into _your_ repository. In subversion, it's _everybody's_ repository, so you know you were always working with the latest code (because you were forced to `svn update` before you could commit if you weren't!).
 
-## TODO: Sort / rearrange table to sections below
-Terminology:
-| Command    | Usage                                                                          |
-|------------|--------------------------------------------------------------------------------|
-| `checkout` | copies file(s) from the repository to the localfs                              |
-| `add`      | adds a file to the index to be _committed_                                     |
-| `commit`   | writes a set of changes into the repository as a _revision_                    |
-| `fetch`    | synchronizes the database from a remote repository _to_ the local (read-only)  |
-| `merge`    | merges two _revisions_ into a single _revision_ (not _always_ a branch!)       |
-| `pull`     | combines fetch and merge into a single command                                 |
-| `push`     | synchronizes the database from a local repository _to_ the remote (write-only) |
+| Command    | Usage                                                                                           |
+|------------|-------------------------------------------------------------------------------------------------|
+| `add`      | adds a file to the index to be _committed_ (covered above in index discussion)                  |
+| `commit`   | writes a set of changes into the repository as a _revision_ (covered above in index discussion) |
+| `clone`    | copies a repository from a remote location (not covered here)                                   |
+| `fetch`    | synchronizes the database from a remote repository _to_ the local (read-only)                   |
+| `merge`    | merges two _revisions_ into a single _revision_ (not _always_ a branch!)                        |
+| `pull`     | combines fetch and merge into a single command                                                  |
+| `push`     | synchronizes the database from a local repository _to_ the remote (write-only)                  |
+| `checkout` | copies file(s) from the repository to the localfs                                               |
 
 _This assumes you set `autosetuprebase` as noted in the Setup section._
 
@@ -217,7 +216,8 @@ So that leaves us with `git pull`. It's basically a shortcut - it is _mostly_ eq
 ```
 $ git diff origin/branchA README.md
 ```
-Because (don't forget) your local repository has _all the information_.
+Because (don't forget) your local repository has _all the information_, and the _reference_ to what the upstream has for `branchA` is `origin/branchA`.
+
 _Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase`. If you did, then it's actually doing a "`git rebase`" in between the `fetch` and `merge`. This makes our repo a lot cleaner and easier to follow. Essentially, it "rolls back" all your changes since you last synchronized to the upstream. Then, it updates your branch to match what is upstream. Once that is complete, it re-applies your changesets but based off of the "new" branch. If this is able to happen cleanly, then a merge revision was never needed. It will clearly tell you when it is doing it as well:
 ```
 $ git pull --rebase  # This is your default if you set autosetuprebase
@@ -281,11 +281,13 @@ Fast-forward
  1 file changed, 62 insertions(+), 29 deletions(-)
 Current branch branchA is up to date.
 ```
+If you think this is what should happen, you can use `git merge --ff-only` to ensure that's the case. If, for some reason, you find this unacceptable, you can use the `--no-ff` flag.
 2. The second kind of merge is a "standard" merge:
 ![](img/remote_changes.png)  
 For this, we both have changes, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
 ![](img/remote_merged.png)  
 Of course, this still needs to be _pushed_ as noted above.
+When performing this kind, I highly recommend using the `--no-commit` flag so you can review what the merge _would have done_ and then manually `git commit`; it will autopopulate the commit message properly for a merge.
 3. The last kind of merge is a "squashed" merge:
 ![](img/squashed_merge.png)  
 In this image, there's a dotted arrow between `7589a237e` and `2c57a9eec` because the merge happened and all the data is there, but the metadata _doesn't_ record it. The log message is (by default) a culmination of all the changesets in between. At this point, all the "my_work" and revisions `7589a237e` are now _orphans_ and are subject to garbage collection in the future. A much more detailed example of squashed merges (I'm a huge fan of them) is below.
@@ -318,6 +320,13 @@ Don’t miss the "^" which indicates that the log should begin at the changeset 
 This will launch your editor. If your editor is git-savvy, it will note that your current commit format is invalid. Be sure to insert two lines into the beginning:
 1. Your one-line commit summary, used to generate log messages like the one currently being edited. It should probably be something like "Squashed commit of feature--cool-intro".
 2. A totally blank line.
+
+# Other subjects
+This is stuff that I think is important / useful but I couldn't fit it elsewhere.
+* Anywhere
+* `git grep`
+* git diff - nearly anything
+* cherry-pick
 
 # What's Not Here
 There are some other things I've already documented on an internal wiki for my team that may interest public users; treat this as a breadcrumb that you might want to search the internet for more information:
@@ -372,18 +381,7 @@ $ git config --global merge.tool meld
  * [Tables Generator](https://www.tablesgenerator.com/markdown_tables) for online table generation
  * [WebGraphviz](http://www.webgraphviz.com/) for online Graphviz graphics
 
-# TODOs
- * Anywhere
-* Speculative / trial branches super light weight
-* `git add -p`
-* `git grep`
-* git diff - nearly anything
-* The Index
-* repo vs repo vs repo vs remotes
-* Squashing and FF
-* cherry-pick
-* refs
- ### Once back at work
-* Name of other prompt program
-* update vs fetch vs pull
-
+# TODO Once back at work
+* Name of other prompt program?
+* Verify `git lg`
+* Special `git grep` options / alias?
