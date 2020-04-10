@@ -259,7 +259,7 @@ Applying: Image tweaked
 ```
 
 ### git push
-This command simply sends your latest changes to the remote repository. If the remote has "moved on" past what your repo "knew" about, it will fail and require you to `pull` again. There are server-side hooks that may also reject your changes for various reasons (branch control, etc.). There is no equivalent in subversion, because `commit` handled that. _Don't forget to do this if you are expecting somebody else to see your code!_
+This command simply sends your latest changes to the remote repository. If the remote has "moved on" past what your repo "knew" about, it will fail and require you to `pull` again. There are server-side hooks that may also reject your changes for various reasons (branch control, etc.). There is no equivalent in subversion, because `commit` handled that. **Don't forget to do this if you are expecting somebody else to see your code!**
 
 ### git checkout
 This command is another source of confusion because subversion's `checkout` is _totally_ different (it's the same as `git clone`). As shown in the illustration above, `git checkout` checks _file(s)_ out of the repo. The normal 99.44% use case is to change what branch you are currently working on:
@@ -267,7 +267,7 @@ This command is another source of confusion because subversion's `checkout` is _
 $ git checkout master
 Switched to branch 'master'
 Your branch is up to date with 'origin/master'.
-revragnarok@Dreyra:~/git_stuff/git4svn$ git checkout branchA
+$ git checkout branchA
 Switched to branch 'branchA'
 Your branch is up to date with 'origin/branchA'.
 ```
