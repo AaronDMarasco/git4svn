@@ -19,17 +19,55 @@ Thanks to the COVID-19 pandemic, I'm stuck at home. My work team is migrating fr
 There are many sites out there that cover similar things, but many seem to be "how to migrate a repo" or simple [cheat sheets](https://www.git-tower.com/blog/git-for-subversion-users-cheat-sheet/). I want a simple set of things I can present over a lunch session or two.
 
 ## Terminology
-We know every technical thing has to have its own jargon and lingo, and there is some overlap between the two. I'd like to make sure we're always on the same page. Here a few key terms that we've been using already with svn and how they apply:
+We know every technical thing has to have its own jargon and lingo, and there is some overlap between the two. I'd like to make sure we're always on the same page. Here a few key terms that we've been using already with svn and how they apply along with a few extra you'll need:
 | Term         | `svn`                                                                    | `git`                                                                                                                            |
 |--------------|--------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | working copy | your local checkout                                                      | N/A, but kinda the same                                                                                                          |
 | repository   | the One True Copy(TM)                                                    | a _copy_ of the codebase; some people (incorrectly) say "_the repository_" to indicate a central copy, _e.g._ the repo on GitHub |
 | revision     | snapshot of the state of all files across all branches                   | snapshot of the file tree at any specific time                                                                                   |
-| branch       | another full copy of entire file tree                                    | a pointer into a revision                                                                                                        |
+| branch       | another full copy of entire file tree                                    | a special type of _reference_ (see below)                                                                                        |
 | commit       | save your changes into a new revision for _everybody_ to immediately see | save your changes into a new revision _in your local repository_                                                                 |
+| reference    | N/A                                                                      | a pointer into a specific revision                                                                                               |
 | index        | N/A                                                                      | the "staging area" between your local file system (working copy-ish) and the repository                                          |
 
-## TODO: Add reference / refs and put somewhere
+### References, Refs, Brances, and Tags (Oh My!)
+As noted above, a revision is a snapshot of _everything_ at a specific time. Each of these snapshots, when combined with their metadata (author, comment, ancestors, etc.), is hashed into a SHA-1 hash to create the unique identifier to label that revision.
+
+| Reference   | Location           | Use                                                                                               |
+|-------------|--------------------|---------------------------------------------------------------------------------------------------|
+| `HEAD`      | N/A                | Points to what the localfs is "based on" in the repository.                                       |
+| branch name | `.git/refs/heads/` | Points to the `HEAD` of the given branch. A new commit will move this to the new revision.        |
+| tag         | `.git/refs/tags/`  | Points to a specific revision. If currently `HEAD` of a branch, it will _not_ move on new commit. |
+
+_Tags_ are special references that don't move, similar to subversion's tags. If you `cat` any of the files listed above, _e.g._ `.git/refs/heads/master`, you will see it is simply the 40-hex SHA-1 hash and a newline. 
+
+Often the shortened version of the hash is unique enough (7 chars), and you can use "`R^N`" to say "N references before R (no N=1)". References can be used in _many_ places on the command line and are very useful. For example, if I want to see what files were changed in the last commit, knowing that the most recent revision is always `HEAD`:
+```
+$ git diff HEAD^ HEAD
+# shortened with bash shortcut:
+$ git diff HEAD{^,}
+$ git diff HEAD{^,} --stat
+ README.md | 91 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++-----------------------------
+ 1 file changed, 62 insertions(+), 29 deletions(-)
+$ git diff HEAD{^,} --stat -b -w # ignore whitespace
+ README.md | 77 +++++++++++++++++++++++++++++++++++++++++++++++++++++++----------------------
+ 1 file changed, 55 insertions(+), 22 deletions(-)
+```
+The `git lg` alias below is very helpful to see history from the command line along with important refs:
+```
+* 5845e57 - (HEAD -> scratch, origin/scratch) WIP done for now (21 hours ago) <Aaron D. Marasco>
+* b0cfc5e - WIP: Need to see those images (22 hours ago) <Aaron D. Marasco>
+*   eba6752 - Merge branch 'scratch' of https://github.com/AaronDMarasco/git4svn into scratch (22 hours ago) <Aaron D. Marasco>
+|\
+| * 725b186 - WIP save to see new images (23 hours ago) <Aaron D. Marasco>
+* | a7c7334 - More images (22 hours ago) <Aaron D. Marasco>
+* | 564d80d - More images (23 hours ago) <Aaron D. Marasco>
+|/
+* ef4aec1 - New image with fetch etc (23 hours ago) <Aaron D. Marasco>
+...
+* 8dc42ff - (origin/master, origin/HEAD, master) Initial commit (3 days ago) <Aaron D. Marasco>
+```
+What you cannot see here is the colors - all the refs on the side are red (_e.g._ `564d80d`) and the named refs (_e.g._ `origin/scratch`) are in yellow.
 
 ## What is "The Index?"
 Many of us learn better with example, so let's provide an example. This is my file tree:
