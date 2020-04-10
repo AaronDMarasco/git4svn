@@ -1,19 +1,34 @@
 # Yet Another git Guide for svn Users
 
 ## Table of Contents
-   * [Table of Contents](#table-of-contents)
-      * [Why (An Intro)?](#why-an-intro)
-   * [TODO](#todo)
-      * [Squashing Commits - An Example](#squashing-commits---an-example)
-      * [What's Not Here](#whats-not-here)
-   * [Other Resources](#other-resources)
-      * [Learning Git](#learning-git)
-      * [Tools and Setup](#tools-and-setup)
-      * [Special Thanks](#special-thanks)
-      * [TODOs](#todos)
-         * [Once back at work](#once-back-at-work)
+* [Why? (An Intro)](#why-an-intro)
+* [Terminology](#terminology)
+ * [References, Refs, Brances, and Tags (Oh My!)](#references-refs-brances-and-tags-oh-my)
+* [What is "The Index?"](#what-is-the-index)
+ * [An Index Usage Example](#an-index-usage-example)
+    * [How To Fix in Subversion](#how-to-fix-in-subversion)
+    * [How to Fix in git (Solution 1)](#how-to-fix-in-git-solution-1)
+* [The Stash](#the-stash)
+    * [How to Fix in git (Solution 2)](#how-to-fix-in-git-solution-2)
+  * [Another Stash Usage Example](#another-stash-usage-example)
+* [Committing Your Changes - add, fetch, pull, push, etc.](#committing-your-changes---add-fetch-pull-push-etc)
+  * [git fetch](#git-fetch)
+  * [git merge](#git-merge)
+  * [git pull](#git-pull)
+  * [git push](#git-push)
+  * [git checkout](#git-checkout)
+    * [Branches - A Diversion](#branches---a-diversion)
+  * [git merge (part deux)](#git-merge-part-deux)
+* [Squashing Commits - An Example](#squashing-commits---an-example)
+* [Other Subjects](#other-subjects)
+* [What's Not Here](#whats-not-here)
+* [Other Resources](#other-resources)
+  * [Learning Git](#learning-git)
+  * [Tools and Setup](#tools-and-setup)
+  * [Special Thanks](#special-thanks)
+* [TODO Once back at work](#todo-once-back-at-work)
 
-## Why (An Intro)?
+## Why? (An Intro)
 Thanks to the COVID-19 pandemic, I'm stuck at home. My work team is migrating from `svn` to `git` and I was going to put together a brown bag or two for them, but since I'm doing it from home I'm able to put a copy on GitHub.
 
 There are many sites out there that cover similar things, but many seem to be "how to migrate a repo" or simple [cheat sheets](https://www.git-tower.com/blog/git-for-subversion-users-cheat-sheet/). I want a simple set of things I can present over a lunch session or two.
@@ -321,7 +336,7 @@ This will launch your editor. If your editor is git-savvy, it will note that you
 1. Your one-line commit summary, used to generate log messages like the one currently being edited. It should probably be something like "Squashed commit of feature--cool-intro".
 2. A totally blank line.
 
-# Other subjects
+# Other Subjects
 This is stuff that I think is important / useful but I couldn't fit it elsewhere.
 * Anywhere
 * `git grep`
