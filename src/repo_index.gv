@@ -4,5 +4,12 @@ digraph "repo_index" {
   node [shape = circle];
   localfs -> index
   index -> repository
+  node [shape=none];
+  file1 [label="README.md when 'git add' was run"]
+  file2 [label="README.md with 'FOO' appended"]
+  index -> file1  [style=dashed, minlen=2, color="black:invis:black"];
+  localfs -> file2  [style=dashed, minlen=2, color="black:invis:black"];
+  {rank=same; file1; index}
+  {rank=same; file2; localfs}
 }
 
