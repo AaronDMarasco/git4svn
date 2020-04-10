@@ -57,15 +57,15 @@ We know every technical thing has to have its own jargon and lingo, and there is
 ### References, Refs, Brances, and Tags (Oh My!)
 As noted above, a revision is a snapshot of _everything_ at a specific time. Each of these snapshots, when combined with their metadata (author, comment, ancestors, etc.), is hashed into a SHA-1 hash to create the unique identifier to label that revision.
 
-| Reference   | Location                 | Use                                                                                                               |
-|-------------|--------------------------|-------------------------------------------------------------------------------------------------------------------|
-| `HEAD`      | N/A ("it's complicated") | Points to a specific revision in the repository that the localfs is "based on."                                   |
-| branch name | `.git/refs/heads/`       | Points to the `HEAD` of the given branch. A new commit to this ref will move ("follow") this to the new revision. |
-| tag         | `.git/refs/tags/`        | Points to a specific revision. If currently `HEAD` of a branch, it will _not_ move on a new commit.               |
+| Reference   | Location           | Use                                                                                                               |
+|-------------|--------------------|-------------------------------------------------------------------------------------------------------------------|
+| `HEAD`      | N/A                | Points to a specific revision in the repository that the localfs is "based on."                                   |
+| branch name | `.git/refs/heads/` | Points to the `HEAD` of the given branch. A new commit to this ref will move ("follow") this to the new revision. |
+| tag         | `.git/refs/tags/`  | Points to a specific revision. If currently `HEAD` of a branch, it will _not_ move on a new commit.               |
 
 _Tags_ are special references that don't move, similar to subversion's tags. If you `cat` any of the files listed above, _e.g._ `.git/refs/heads/master`, you will see it is simply the 40-hex SHA-1 hash and a newline. 
 
-Often the shortened version of the hash is unique enough (7 chars), and you can use "`R^N`" to say "N references before R (no N=1)". References can be used in _many_ places on the command line and are very useful. For example, if I want to see what files were changed in the last commit, knowing that the most recent revision is always `HEAD`:
+Often the shortened version of the hash is unique enough (7 chars), and you can use "`R^N`" to say "N references before R" (no N means 1). References can be used in _many_ places on the command line and are very useful. For example, if I want to see what files were changed in the last commit, knowing that the most recent revision is always `HEAD`:
 ```
 $ git diff HEAD^ HEAD
 # shortened with bash shortcut:
@@ -91,7 +91,7 @@ The `git lg` alias below is very helpful to see history from the command line al
 ...
 * 8dc42ff - (origin/master, origin/HEAD, master) Initial commit (3 days ago) <Aaron D. Marasco>
 ```
-What you cannot see here is the colors - all the refs on the side are red (_e.g._ `564d80d`) and the named refs (_e.g._ `origin/scratch`) are in yellow.
+What you cannot see here is the colors - all the refs on the side (_e.g._ `564d80d`) are red and the named refs (_e.g._ `origin/scratch`) are in yellow. This makes them easy to identify. You can also see it uses ASCII art to show when two copies of the source code diverged (after `ef4aec1`) and then merged (`eba6752`) because I was creating the images on my local machine while using an online editor for the main document.
 
 ## What is "The Index?"
 Many of us learn better with example, so let's provide an example. This is my file tree:
@@ -102,7 +102,7 @@ README.md
 I don't have them in a git repository yet, so I will create one. Details omitted, because it's easy to search and not relevant here. Since the files are new to the repository, I need to `git add` them. What actually happens when I do that?
  * `git` beings to create a new revision, called _the index_, and adds the contents of `LICENSE` and `README.md` to it _immediately_.
 
-Why did I emphasise the word _immediately_? Because `svn add` says "from now on, I need to start watching `LICENSE` and `README.md`", while `git add` _stages_ the contents of the files _as it is right now_ in the index. If I then do `echo FOO >> README.md`, a commit in `svn` would have "FOO" added to the end of the file. In `git`, the `add` adds a snapshot of the file _now_. I'll try to illustrate it a little:
+Why did I emphasise the word _immediately_? Because `svn add` says "from now on, I need to start watching `LICENSE` and `README.md`", while `git add` _stages_ the contents of the files _as it is right now_ in the index. If I then do `echo FOO >> README.md`, a commit in `svn` would have "FOO" added to the end of the file. In `git`, **the added "FOO" won't be committed**. I'll try to illustrate it a little:
 
 ![](img/repo_index.png)
 
@@ -124,7 +124,7 @@ $ git diff --stat
 ```
 Again, **the default of `git diff` tells you the difference between the file system and the index**. This is important, because `git commit` and `svn commit` are very similar, but act differently.
 
-The subversion mindset is "but these **files** changed, I want them checked in." The git mindset is "only check in the **changes** I explicitly tell you to."
+The subversion mindset is "but these **files** changed, I want them checked in." The git mindset is "only check in the **changes** I _explicitly_ tell you to."
 
 This is further illustrated here, along with the `git diff` variation you need to use to see what is _about to be committed_:
 
@@ -141,7 +141,7 @@ I've been working for a few hours on a small feature, and I didn't have it in a 
 You probably already have two or three working copies from the same repo, right? So you switch to one of the others, do an `svn update` (more on that later), make the change, and then `svn commit`.
 
 #### How to Fix in git (Solution 1)
-You fix the two magic files that needed to be fixed. You run `git add -p` which is a special mode of adding that will ask you _each **p**atch_ if it should be added to the index. You know certain files don't need to ask, so you can either tell it not to ask any more about that file ("`d`"") or just give it the two files on the command line, `git add -p file1 file2`. If you had no unrelated changes in the files, you could've skipped the `-p` but we're going to say you had debug enabled at the top of the file, and you don't want that committed. When you're done:
+You fix the two magic files that needed to be fixed. You run `git add -p` which is a special mode of adding that will ask you _each **p**atch_ if it should be added to the index. You know certain files don't need to ask, so you can either tell it not to ask any more about that file ("`d`") or just give it the two files on the command line: `git add -p file1 file2`. If you had no unrelated changes in the files, you could've skipped the `-p` but we're going to say you had debug enabled at the top of the file, and you don't want that committed. When you're done:
 * `git diff --cached` shows you _only_ the changes needed to fix your coworker's problem
 * `git commit` will commit _only_ those changes, with all your other files still modified
 
@@ -182,13 +182,15 @@ See there that `stash@{0}` is a revision? It _was_ `ed5e73f01a6c0de518cdc24a9cf2
 # write code to enable debug mode in a submodule
 $ git stash save "Enable debug mode in submodule X"
 ```
-What would this do? Three weeks from now, you can be working in submodule X. You already have a snippet that enables all the debugging that you can apply automatically at any time!
+What would this do? Three weeks from now, you can be working in submodule X. You already have a snippet that enables all the debugging that you can `apply` automatically at any time!
 ```
 $ git stash list
 # find the one you want, let's say it's stash@{3}
 $ git stash apply stash@{3}
 # your working copy now has debug enabled on submodule X!
 ```
+
+If you didn't catch the subtle difference, `pop` is a combination of `apply` and then, if successful, a `drop` which I didn't cover. So `apply` leaves the revision in the stash.
 
 ## Committing Your Changes - add, fetch, pull, push, etc.
 This is another sticky point for svn users, so let's talk about what happens when. As a reminder:
