@@ -1,32 +1,41 @@
 # Yet Another git Guide for svn Users
 
 ## Table of Contents
-* [Why? (An Intro)](#why-an-intro)
-* [Terminology](#terminology)
- * [References, Refs, Brances, and Tags (Oh My!)](#references-refs-brances-and-tags-oh-my)
-* [What is "The Index?"](#what-is-the-index)
- * [An Index Usage Example](#an-index-usage-example)
-    * [How To Fix in Subversion](#how-to-fix-in-subversion)
-    * [How to Fix in git (Solution 1)](#how-to-fix-in-git-solution-1)
-* [The Stash](#the-stash)
-    * [How to Fix in git (Solution 2)](#how-to-fix-in-git-solution-2)
-  * [Another Stash Usage Example](#another-stash-usage-example)
-* [Committing Your Changes - add, fetch, pull, push, etc.](#committing-your-changes---add-fetch-pull-push-etc)
-  * [git fetch](#git-fetch)
-  * [git merge](#git-merge)
-  * [git pull](#git-pull)
-  * [git push](#git-push)
-  * [git checkout](#git-checkout)
-    * [Branches - A Diversion](#branches---a-diversion)
-  * [git merge (part deux)](#git-merge-part-deux)
-* [Squashing Commits - An Example](#squashing-commits---an-example)
-* [Other Subjects](#other-subjects)
-* [What's Not Here](#whats-not-here)
-* [Other Resources](#other-resources)
-  * [Learning Git](#learning-git)
-  * [Tools and Setup](#tools-and-setup)
-  * [Special Thanks](#special-thanks)
-* [TODO Once back at work](#todo-once-back-at-work)
+   * [Yet Another git Guide for svn Users](#yet-another-git-guide-for-svn-users)
+      * [Why? (An Intro)](#why-an-intro)
+      * [Terminology](#terminology)
+         * [References, Refs, Brances, and Tags (Oh My!)](#references-refs-brances-and-tags-oh-my)
+      * [What is "The Index?"](#what-is-the-index)
+         * [An Index Usage Example](#an-index-usage-example)
+            * [How To Fix in Subversion](#how-to-fix-in-subversion)
+            * [How to Fix in git (Solution 1)](#how-to-fix-in-git-solution-1)
+      * [The Stash](#the-stash)
+            * [How to Fix in git (Solution 2)](#how-to-fix-in-git-solution-2)
+         * [Another Stash Usage Example](#another-stash-usage-example)
+      * [Committing Your Changes - add, fetch, pull, push, etc.](#committing-your-changes---add-fetch-pull-push-etc)
+         * [git fetch](#git-fetch)
+         * [git merge](#git-merge)
+         * [git pull](#git-pull)
+         * [git push](#git-push)
+         * [git checkout](#git-checkout)
+            * [Branches - A Diversion](#branches---a-diversion)
+         * [git merge (part deux)](#git-merge-part-deux)
+      * [Squashing Commits - An Example](#squashing-commits---an-example)
+   * [Other Subjects](#other-subjects)
+      * [git help](#git-help)
+      * [git grep](#git-grep)
+      * [Git Anywhere](#git-anywhere)
+      * [git diff](#git-diff)
+         * [git difftool](#git-difftool)
+      * [git log](#git-log)
+      * [git mergetool](#git-mergetool)
+      * [git cherry-pick](#git-cherry-pick)
+   * [What's Not Here](#whats-not-here)
+   * [Other Resources](#other-resources)
+      * [Learning Git](#learning-git)
+      * [Tools and Setup](#tools-and-setup)
+      * [Special Thanks](#special-thanks)
+   * [TODO Once back at work](#todo-once-back-at-work)
 
 ## Why? (An Intro)
 Thanks to the COVID-19 pandemic, I'm stuck at home. My work team is migrating from `svn` to `git` and I was going to put together a brown bag or two for them, but since I'm doing it from home I'm able to put a copy on GitHub.
@@ -264,7 +273,7 @@ Changes to be committed:
         modified:   README.md
 
 ```
-This also covers the "just throw away everything I did to this file and bring it back to what's in the repo":
+This also covers the "just throw away everything I did to this file and bring it back to what's in the repo" scenario:
 ```
 $ git checkout -- README.md
 $ git status
@@ -338,10 +347,49 @@ This will launch your editor. If your editor is git-savvy, it will note that you
 
 # Other Subjects
 This is stuff that I think is important / useful but I couldn't fit it elsewhere.
-* Anywhere
-* `git grep`
-* git diff - nearly anything
-* cherry-pick
+## git help
+This command is how you access the documentation for git, _e.g._:
+* `git help diff`
+* `git help commit`
+* `git help checkout`
+
+## git grep
+If you're on a system that you cannot get `ripgrep` installed, then `git grep` is the next best thing. It's just like `grep -r` but will use all your available CPUs in parallel to search the repository database, which is insanely faster. By default it will only search actively-monitored files, but you can also ask it to search `--untracked` files as well.
+
+The options I prefer for `grep` are listed in the config info below so I can just do `git g <expression>`.
+
+## Git Anywhere
+Because a repository is "only" a subdirectory `.git` at the top-level of a directory tree, you can put a git repository _anywhere_ you think having history and the ability to rollback would be useful. Some examples:
+ * `/etc/` before upgrading some RPMs
+ * Any configuration directory before you make a bunch of changes
+   * Don't forget that Windows 10 has embedded Ubuntu with git available
+ * Inside a subversion repo (if you're stuck in svn and don't want to use the built-in git-svn capabilities)
+   * If doing this, it's useful to `git tag` svn revisions
+
+Then when you're done with whatever "risky" thing you were doing, simply `rm -rf .git`.
+
+## git diff
+Yes, it was tangentially covered above, but you really need to play with it to start to understand the power. You can effectively get a diff of nearly _anything_ across all space and time. You can compare a file in one branch to another file (different name) in another branch, etc.
+
+### git difftool
+If you'd prefer a graphical interface, you can configure one and then use `git difftool` to launch it. See below for configuring it for `meld`. Also supports `--cached` and any other `git diff` options.
+
+## git log
+This tool has many amazing options, like `--since` and `--before/--after`, _e.g._ `git log --since="yesterday"` or `git log --since="last month"` or even "`last tues`"
+
+The configuration below has two aliases with `git log` options - `git lg` (shown before) and `git last` which shows the last change.
+
+## git mergetool
+When a merge fails, subversion leaves you high and dry. Git lets you define a graphical tool (See below for configuring it for `meld`) to launch to attempt to fix the broken merge.
+
+## git cherry-pick
+This is very helpful when you are deep in a branch for weeks and somebody tells you, "in my branch, I fixed that really important bug that you've been hitting."
+```
+$ git fetch
+$ git lg origin/helpful_branch
+$ git cherry-pick -x <ref> # if last, can simply be origin/helpful_branch
+```
+This fixes that one important issue without a full merge of the other branch, putting that off until you are ready later. The `-x` records its source for later reference.
 
 # What's Not Here
 There are some other things I've already documented on an internal wiki for my team that may interest public users; treat this as a breadcrumb that you might want to search the internet for more information:
