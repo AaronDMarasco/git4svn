@@ -197,9 +197,9 @@ This is another sticky point for svn users, so let's talk about what happens whe
 
 ![](img/repo_index_origin.png)
 
-`origin` is the default name for an upstream ("remote") repository; the "main" copy hosted on a corporate server or GitHub, etc. It's where you originally "cloned" from above.
+`origin` is the default name for an upstream ("remote") repository; the "main" copy hosted on a corporate server or GitHub, etc. It's where you originally "cloned" from previously.
 
-Earlier we talked about `git add` and how to put your changes into the index. If you then `git commit` them, they are put into _your_ repository. In subversion, it's _everybody's_ repository, so you know you were always working with the latest code (because you were forced to `svn update` before you could commit if you weren't!).
+Earlier we talked about `git add` and how to put your changes into the index. If you then `git commit` them, they are put into _your_ repository. In subversion, it's _everybody's_ repository, so you know you were always working with the latest code (because you were forced to `svn update` before you could commit if you weren't!). In git, you're also responsible for keeping your _entire repository_ synchronized with other(s).
 
 | Command    | Usage                                                                                           |
 |------------|-------------------------------------------------------------------------------------------------|
@@ -208,7 +208,7 @@ Earlier we talked about `git add` and how to put your changes into the index. If
 | `clone`    | copies a repository from a remote location (not covered here)                                   |
 | `fetch`    | synchronizes the database from a remote repository _to_ the local (read-only)                   |
 | `merge`    | merges two _revisions_ into a single _revision_ (not _always_ a branch!)                        |
-| `pull`     | combines fetch and merge into a single command                                                  |
+| `pull`     | combines `fetch` and `merge` into a single command                                              |
 | `push`     | synchronizes the database from a local repository _to_ the remote (write-only)                  |
 | `checkout` | copies file(s) from the repository to the localfs                                               |
 
@@ -231,7 +231,7 @@ nothing to commit, working tree clean
 ![](img/after_fetch.png)
 
 ### git merge
-This command is usually used for another reason (which we'll touch on, but as an svn user, you already know). But, as noted above, `git merge` will merges two _revision_ into a single _revision_ and we want to merge "our" `branchA` (`24f3b8fecf`) with "their" `branchA` (`origin/branchA` or `fcbd2855f`). So to do that (assuming the local branch is already in `branchA`), we use the same merge command but the "target" of the merge looks special:
+This command is usually used for another reason (which we'll touch on, but as an svn user, you already know). But, as noted above, `git merge` will merges two _revisions_ into a single _revision_ and we want to merge "our" `branchA` (`24f3b8fecf`) with "their" `branchA` (`origin/branchA` or `fcbd2855f`). So to do that (assuming the local branch is already in `branchA`), we use the same merge command, but the source of the merge looks special (the target is the current `HEAD`):
 ```
 $ git merge origin/branchA
 ```
@@ -259,10 +259,19 @@ Applying: Image tweaked
 ```
 
 ### git push
-This command simply sends your latest changes to the remote repository. If the remote has "moved on" past what your repo "knew" about, it will fail and require you to `pull` again. There are server-side hooks that may also reject your changes for various reasons (branch control, etc.).
+This command simply sends your latest changes to the remote repository. If the remote has "moved on" past what your repo "knew" about, it will fail and require you to `pull` again. There are server-side hooks that may also reject your changes for various reasons (branch control, etc.). There is no equivalent in subversion, because `commit` handled that. _Don't forget to do this if you are expecting somebody else to see your code!_
 
 ### git checkout
-This command is another source of confusion because subversion's `checkout` is _totally_ different (it's the same as `git clone`). As shown in the illustration above, `git checkout` checks _file(s)_ out of the repo. The normal 99.44% use case is to check out a branch to work on. When you want to create a new branch, you can add `-b` to the command and it will branch from wherever you are, including a "dirty" workspace. But yes, you can `checkout` a single file (and it will auto-`add`, which I don't like).
+This command is another source of confusion because subversion's `checkout` is _totally_ different (it's the same as `git clone`). As shown in the illustration above, `git checkout` checks _file(s)_ out of the repo. The normal 99.44% use case is to change what branch you are currently working on:
+```
+$ git checkout master
+Switched to branch 'master'
+Your branch is up to date with 'origin/master'.
+revragnarok@Dreyra:~/git_stuff/git4svn$ git checkout branchA
+Switched to branch 'branchA'
+Your branch is up to date with 'origin/branchA'.
+```
+When you want to create a new branch, you can add `-b` to the command and it will branch from wherever you are, including a "dirty" workspace. But yes, you can `checkout` a single file (and it will auto-`add`, which I don't like).
 ```
 $ git checkout master README.md
 $ git status
