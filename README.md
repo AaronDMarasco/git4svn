@@ -271,7 +271,9 @@ $ git checkout branchA
 Switched to branch 'branchA'
 Your branch is up to date with 'origin/branchA'.
 ```
-When you want to create a new branch, you can add `-b` to the command and it will branch from wherever you are, including a "dirty" workspace. But yes, you can `checkout` a single file (and it will auto-`add`, which I don't like).
+When you want to create a new branch, you can add `-b` to the command and it will branch from wherever you are, including a "dirty" workspace. 
+
+But yes, you can `checkout` a single file (and it will auto-`add`, which I don't like).
 ```
 $ git checkout master README.md
 $ git status
@@ -297,7 +299,7 @@ nothing to commit, working tree clean
 #### Branches - A Diversion
 Branching is _yet another_ paradigm shift that you should embrace. With subversion, a new branch meant you sacrificed a ton of disk space and had to wait while things were copied, etc. Then when you re-build, all the files are new so `make` runs forever. In git, a branch is a 41-byte file because it's simply a _reference_ into the repository at a certain revision. This is why they are often referred to as "lightweight" and branching is _extremely encouraged_. Because of the decentralized nature of git, your branches are **unknown to anybody else unless you `push` them** to a remote repository. This means you can make branches for the tiniest of things if you think you would need to rollback. **You should almost always be working in a branch** even if it is local-only. You can always merge it back into the mainline development on your schedule and with your sanitized notes (see "squashed commits" elsewhere). For example, you may want to commit to your branch:
 1. Hourly. Seriously, you can then `diff` and see what you changed in the past hour.
-2. After code successfully compiled. Then you can always get back to it. **Do this _before_ trying to clean anything up.**
+2. After code successfully compiled. Then you can always get back to the working state. **Do this _before_ trying to clean anything up.**
 3. When you're about to experiment with an alternative option with something.
 
 It's difficult to emphasize how much of a life-changer this can be until you actually start using it. Especially when you combine it with `git diff` to see the differences.
@@ -317,6 +319,7 @@ Fast-forward
 Current branch branchA is up to date.
 ```
 If you think this is what should happen, you can use `git merge --ff-only` to ensure that's the case. If, for some reason, you find this unacceptable, you can use the `--no-ff` flag.
+
 2. The second kind of merge is a "standard" merge:
 ![](img/remote_changes.png)  
 For this, we both have changes, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
