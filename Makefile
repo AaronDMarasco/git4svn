@@ -1,11 +1,12 @@
 IMGS = $(patsubst src/%,img/%,$(patsubst %.gv,%.png,$(wildcard src/*.gv)))
+
 all: $(IMGS)
+	-git status img
 
 img/%.png : src/%.gv
 	dot -Tpng -o $@ $<
-	-git status img
 
-.PHONY: toc
+.PHONY: all toc
 
 toc: ./README.md
 	./gh-md-toc $<
