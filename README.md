@@ -53,6 +53,8 @@ We know every technical thing has to have its own jargon and lingo, and there is
 | reference    | N/A                                                                      | a pointer into a specific revision                                                                                               |
 | index        | N/A                                                                      | the "staging area" between your local file system (working copy-ish) and the repository                                          |
 
+A full reference is available with `git help gitglossary`.
+
 ### References, Refs, Brances, and Tags (Oh My!)
 As noted above, a revision is a snapshot of _everything_ at a specific time. Each of these snapshots, when combined with their metadata (author, comment, ancestors, etc.), is hashed into a SHA-1 hash to create the unique identifier to label that revision.
 
@@ -99,7 +101,7 @@ LICENSE
 README.md
 ```
 I don't have them in a git repository yet, so I will create one. Details omitted, because it's easy to search and not relevant here. Since the files are new to the repository, I need to `git add` them. What actually happens when I do that?
- * `git` beings to create a new revision, called _the index_, and adds the contents of `LICENSE` and `README.md` to it _immediately_.
+ * `git` begins to create a new revision, called _the index_, and adds the contents of `LICENSE` and `README.md` to it _immediately_.
 
 Why did I emphasise the word _immediately_? Because `svn add` says "from now on, I need to start watching `LICENSE` and `README.md`", while `git add` _stages_ the contents of the files _as it is right now_ in the index. If I then do `echo FOO >> README.md`, a commit in `svn` would have "FOO" added to the end of the file. In `git`, **the added "FOO" won't be committed**. I'll try to illustrate it a little:
 
@@ -140,7 +142,7 @@ I've been working for a few hours on a small feature, and I didn't have it in a 
 You probably already have two or three working copies from the same repo, right? So you switch to one of the others, do an `svn update` (more on that later), make the change, and then `svn commit`.
 
 #### How to Fix in git (Solution 1)
-You fix the two magic files that needed to be fixed. You run `git add -p` which is a special mode of adding that will ask you _each **p**atch_ if it should be added to the index. You know certain files don't need to ask, so you can either tell it not to ask any more about that file ("`d`") or just give it the two files on the command line: `git add -p file1 file2`. If you had no unrelated changes in the files, you could've skipped the `-p` but we're going to say you had debug enabled at the top of the file, and you don't want that committed. When you're done:
+You fix the two magic files that needed to be fixed. A changeset is effectively a series of modifications (patches) to a file, and you can run `git add -p` which is a special mode of `add`ing that will present to you _each **p**atch_ asking if it should be added to the index. You know certain files don't need to ask, so you can either tell it not to ask any more about that file ("`d`") or just give it the two files on the command line: `git add -p file1 file2`. If you had no unrelated changes in the files, you could've skipped the `-p` but we're going to say you had debug enabled at the top of the file, and you don't want that committed. When you're done:
 * `git diff --cached` shows you _only_ the changes needed to fix your coworker's problem
 * `git commit` will commit _only_ those changes, with all your other files still modified
 
@@ -211,14 +213,16 @@ Earlier we talked about `git add` and how to put your changes into the index. If
 | `push`     | synchronizes the database from a local repository _to_ the remote (write-only)                  |
 | `checkout` | copies file(s) from the repository to the localfs                                               |
 
-_This assumes you set `autosetuprebase` as noted in the Setup section._
+_This section's examples and text assumes you set `autosetuprebase` as noted in the [Setup section below](#tools-and-setup)._
 
 `git pull` is _roughly_ equivalent to `svn update` and is the command you will likely use the most. However, for completeness, let's examine the two underlying commands because they can be useful in their own.
 
 ![](img/fetch_etc.png)
 
 ### git fetch
-This will read all the changes from a remote repository (by default `origin`) and replicate them in the local repository. These revisions are _now all available_ immediately in our repository. _However_ they are _not_ expressed in our local filesystem. If I was working yesterday on a branch named `branchA`, and I pushed it to the server, the one revision `24f3b8fecf` in my repository is _referenced_ as my branch `branchA` and also `origin/branchA`. However, if my coworker made some changes this morning and pushed them, I just received them in my repostory. `branchA` on _my_ repository has not changed, but `origin/branchA` is now `fcbd2855f`. An example of this:
+> git-fetch - Download objects and refs from another repository
+
+This will read all the changes from a remote repository (by default `origin`) and replicate them in the local repository. These revisions are _now all available_ immediately in our repository. _However_ they are _not_ expressed in our local filesystem. If I was working yesterday on a branch named `branchA`, and I pushed it to the server, the one revision `24f3b8fecf` in my repository is _referenced_ as my branch `branchA` and also `origin/branchA`. However, if my coworker made some changes this morning and pushed them, I just received them in my repository. `branchA` on _my_ repository has not changed, but `origin/branchA` is now `fcbd2855f`. An example of this:
 ```
 $ git status
 On branch branchA
@@ -230,6 +234,8 @@ nothing to commit, working tree clean
 ![](img/after_fetch.png)
 
 ### git merge
+> git-merge - Join two or more development histories together
+
 This command is usually used for another reason (which we'll touch on, but as an svn user, you already know). But, as noted above, `git merge` will merges two _revisions_ into a single _revision_ and we want to merge "our" `branchA` (`24f3b8fecf`) with "their" `branchA` (`origin/branchA` or `fcbd2855f`). So to do that (assuming the local branch is already in `branchA`), we use the same merge command, but the source of the merge looks special (the target is the current `HEAD`):
 ```
 $ git merge origin/branchA
@@ -237,13 +243,15 @@ $ git merge origin/branchA
 ![](img/after_merge.png)
 
 ### git pull
+> git-pull - Fetch from and integrate with another repository or a local branch
+
 So that leaves us with `git pull`. It's basically a shortcut - it is _mostly_ equivalent to `git fetch && git merge origin/<branchname>`. As noted above, it is what you will do 99% of the time, and can be treated as a rough equivalent of `svn update`. The difference is that if the merge fails, the fetch did happen, so you can locally examine what is wrong, _e.g._:
 ```
 $ git diff origin/branchA README.md
 ```
 Because (don't forget) your local repository has _all the information_, and the _reference_ to what the upstream has for `branchA` is `origin/branchA`.
 
-_Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase`. If you did, then it's actually doing a "`git rebase`" in between the `fetch` and `merge`. This makes our repo a lot cleaner and easier to follow. Essentially, it "rolls back" all your changes since you last synchronized to the upstream. Then, it updates your branch to match what is upstream. Once that is complete, it re-applies your changesets but based off of the "new" branch. If this is able to happen cleanly, then a merge revision was never needed. It will clearly tell you when it is doing it as well:
+_Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase` as noted in the [Setup section below](#tools-and-setup). If you did, then it's actually doing a "`git rebase`" in between the `fetch` and `merge`. This makes our repo a lot cleaner and easier to follow. Essentially, it "rolls back" all your changes since you last synchronized to the upstream. Then, it updates your branch to match what is upstream. Once that is complete, it re-applies your changesets but based off of the "new" branch. If this is able to happen cleanly, then a merge revision was never needed. It will clearly tell you when it is doing it as well:
 ```
 $ git pull --rebase  # This is your default if you set autosetuprebase
 remote: Enumerating objects: 8, done.
@@ -258,9 +266,13 @@ Applying: Image tweaked
 ```
 
 ### git push
+> git-push - Update remote refs along with associated objects
+
 This command simply sends your latest changes to the remote repository. If the remote has "moved on" past what your repo "knew" about, it will fail and require you to `pull` again. There are server-side hooks that may also reject your changes for various reasons (branch control, etc.). There is no equivalent in subversion, because `commit` handled that. **Don't forget to do this if you are expecting somebody else to see your code!**
 
 ### git checkout
+> git-checkout - Switch branches or restore working tree files
+
 This command is another source of confusion because subversion's `checkout` is _totally_ different (it's the same as `git clone`). As shown in the illustration above, `git checkout` checks _file(s)_ out of the repo. The normal 99.44% use case is to change what branch you are currently working on:
 ```
 $ git checkout master
@@ -285,7 +297,7 @@ Changes to be committed:
         modified:   README.md
 
 ```
-This also covers the "just throw away everything I did to this file and bring it back to what's in the repo" scenario:
+This also covers the "just throw away everything I did to this file and bring it back to what's in the repo" scenario (equivalent to `svn revert`):
 ```
 $ git checkout -- README.md
 $ git status
@@ -321,7 +333,7 @@ If you think this is what should happen, you can use `git merge --ff-only` to en
 
 2. The second kind of merge is a "standard" merge:
 ![](img/remote_changes.png)  
-For this, we both have changes, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
+For this, both repositories (ours and the remote) have new revisions that we both consider part of `branchA`, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
 ![](img/remote_merged.png)  
 Of course, this still needs to be _pushed_ as noted above.
 When performing this kind, I highly recommend using the `--no-commit` flag so you can review what the merge _would have done_ and then manually `git commit`; it will autopopulate the commit message properly for a merge.
@@ -337,7 +349,7 @@ The following is an example of merging in a branch "`feature--cool-intro`" from 
 
 Ensure latest sync with server:
 * `git pull --rebase`
-* `git merge --no-commit --squash feature--cool-intro`
+* `git merge --no-commit --squash --no-ff feature--cool-intro`
 
 At this point, the merge is staged in the "index,"" but the git-proposed commit message is not very human-readable (it includes the full logs of all intermediate commits). This information is stored in your repository in `.git/SQUASH_MSG`:
 ```
@@ -360,14 +372,25 @@ This will launch your editor. If your editor is git-savvy, it will note that you
 
 # Other Subjects
 This is stuff that I think is important / useful but I couldn't fit it elsewhere.
+
 ## git help
+> git-help - Display help information about Git
+
 This command is how you access the documentation for git, _e.g._:
 * `git help diff`
 * `git help commit`
 * `git help checkout`
+* `git help gitglossary`
 * `git help`
 
+## git status
+> git-status - Show the working tree status
+
+This one is used _all the time_ and you should probably scan through `git help status` to see how powerful it can be; I find myself giving it a path (or just `.`) often.
+
 ## git grep
+> git-grep - Print lines matching a pattern
+
 If you're on a system that you cannot get `ripgrep` installed, then `git grep` is the next best thing. It's just like `grep -r` but will use all your available CPUs in parallel to search the repository database, which is insanely faster. By default it will only search actively-monitored files, but you can also ask it to search `--untracked` files as well.
 
 The options I prefer for `grep` are listed in the config info below so I can just do `git g <expression>`.
@@ -383,20 +406,30 @@ Because a repository is "only" a subdirectory `.git` at the top-level of a direc
 Then when you're done with whatever "risky" thing you were doing, simply `rm -rf .git`.
 
 ## git diff
+> git-diff - Show changes between commits, commit and working tree, etc
+
 Yes, it was tangentially covered above, but you really need to play with it to start to understand the power. You can effectively get a diff of nearly _anything_ across all space and time. You can compare a file in one branch to another file (different name) in another branch, etc.
 
 ### git difftool
+> git-difftool - Show changes using common diff tools
+
 If you'd prefer a graphical interface, you can configure one and then use `git difftool` to launch it. See below for configuring it for `meld`. Also supports `--cached` and any other `git diff` options.
 
 ## git log
+> git-log - Show commit logs
+
 This tool has many amazing options, like `--since` and `--before/--after`, _e.g._ `git log --since="yesterday"` or `git log --since="last month"` or even "`last tues`"
 
 The configuration below has two aliases with `git log` options - `git lg` (shown before) and `git last` which shows the last change.
 
 ## git mergetool
+> git-mergetool - Run merge conflict resolution tools to resolve merge conflicts
+
 When a merge fails, subversion leaves you high and dry. Git lets you define a graphical tool (See below for configuring it for `meld`) to launch to attempt to fix the broken merge.
 
 ## git cherry-pick
+> git-cherry-pick - Apply the changes introduced by some existing commits
+
 This is very helpful when you are deep in a branch for weeks and somebody tells you, "in my branch, I fixed that really important bug that you've been hitting."
 ```
 $ git fetch
@@ -404,6 +437,83 @@ $ git lg origin/helpful_branch
 $ git cherry-pick -x <ref> # if last, can simply be origin/helpful_branch
 ```
 This fixes that one important issue without a full merge of the other branch, putting that off until you are ready later. The `-x` records its source for later reference.
+
+# A Day In The Life Of...
+* See also: `git help giteveryday`
+
+What you'll need to do every day is covered elsewhere within this document, but let's reiterate one more time the workflow that will happen 90% of the time. This assumes a multi-day change that _might_ be peer-reviewed, etc.:
+
+## Create a Branch to Work
+```
+$ git checkout master  # or whatever the main development branch is named
+$ git pull  # always ensure you have the latest
+$ git checkout -b my_branch
+$ git push --set-upstream origin my_branch
+```
+You don't even need to remember that last command; if you try to do a "regular" push, `git` tells you exactly what to do:
+```
+$ git push
+fatal: The current branch my_branch has no upstream branch.
+To push the current branch and set the remote as upstream, use
+
+    git push --set-upstream origin my_branch
+```
+
+### Do Stuff
+```
+# 10:
+# Do some work
+$ git diff
+$ git commit
+# goto 10
+```
+You probably want to throw in a `git push` at least once a day; hard drives fail sometimes.
+
+### Keep Up-to-Date
+If you worry about missing major changes in `master`, it's a good idea to occasionally bring it into your branch. This helps minimize your conflicts later down the road, and ensures the code you test is "more realistic."
+```
+$ git fetch
+$ git merge origin/master
+```
+**OR**
+```
+$ git checkout master
+$ git pull --rebase
+$ git checkout my_branch
+$ git merge master
+```
+The latter ensures your local `master` is also in sync; this is useful if you want to keep an eye on your differences with `git diff master` as part of your development cycle.
+
+### Wrap It Up
+It's been a few days, and you're done. Your work has possibly even been peer reviewed, run through a test harness, etc.
+```
+$ git checkout master
+$ git pull --rebase
+$ git merge --no-commit my_branch  # might be --squash, --no-ff, etc...
+$ git difftool  # Make sure everything looks sane
+$ git commit
+$ git push
+```
+As noted above, we have options when merging; we need to decide if we will have a standard merge with every revision of `my_branch` or if we want to throw away the intermediate steps (squashed merge).
+
+### Clean The Repo
+There is now a branch we no longer care about in our repository, which isn't a big deal. The bigger concern is it's on the central copy we all share, and that can get cluttered very easily. Especially if we have a CI/CD infrastructure like Jenkins operating on _every_ branch in the repo!
+```
+$ git branch -d my_branch
+Deleted branch my_branch (was 36fa99f).
+$ git push --delete origin my_branch
+To https://github.com/AaronDMarasco/git4svn.git
+ - [deleted]         my_branch
+```
+
+If the squash was merged, or for some other reason you want to abandon the branch without merging, `git` will try to protect you and remind you one last time how to get to that revision:
+```
+$ git branch -d my_branch
+warning: deleting branch 'my_branch' that has been merged to
+         'refs/remotes/origin/my_branch', but not yet merged to HEAD.
+Deleted branch my_branch (was 3fb9dd3).
+```
+At this point, I could still `git checkout 3fb9dd3` to get it back. It won't be there forever; there is a garbage collector.
 
 # What's Not Here
 There are some other things I've already documented on an internal wiki for my team that may interest public users; treat this as a breadcrumb that you might want to search the internet for more information:
