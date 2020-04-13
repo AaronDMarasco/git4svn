@@ -1,0 +1,15 @@
+digraph "remote_changes" {
+  rankdir=BT;
+  node [shape = oval];
+  ancestor -> "24f3b8fecf"
+  "24f3b8fecf" -> "8dc42ffaa"
+  "8dc42ffaa" -> "fcbd2855f"
+  "24f3b8fecf" -> "7589a237e"
+  node [shape = none];
+  HEAD -> "7589a237e" [style=dashed];
+  "branchA" -> "7589a237e" [style=dashed];
+  "origin/branchA" -> "fcbd2855f" [style=dashed];
+  {rank=max; ancestor; "24f3b8fecf";  "8dc42ffaa"; "fcbd2855f";}
+  {rank=min; HEAD; "branchA";}
+}
+

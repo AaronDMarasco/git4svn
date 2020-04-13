@@ -1,0 +1,10 @@
+digraph "repo_index_origin" {
+  rankdir=BT;
+  node [shape = doublecircle]; origin
+  node [shape = polygon, size = 5]; repository
+  node [shape = circle];
+  localfs -> index
+  index -> repository
+  repository-> origin
+}
+

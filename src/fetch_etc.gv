@@ -1,0 +1,14 @@
+digraph "fetch_etc" {
+  rankdir=BT;
+  node [shape = doublecircle]; remote
+  node [shape = polygon, size = 5]; repository
+  node [shape = circle]; index
+  repository -> localfs [ label = "  git checkout" ]
+  index -> repository [ label = "  git commit" ]
+  localfs -> index [ label = "  git add" ]
+  repository -> remote[ label = "  git push" ]
+  remote-> repository [ label = "  git fetch" ]
+  { rank=max; remote }
+  { rank=min; localfs }
+}
+
