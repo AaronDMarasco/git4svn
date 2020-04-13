@@ -453,12 +453,12 @@ What you'll need to do every day is covered elsewhere within this document, but 
 
 ## Create a Branch to Work
 ```
-$ git checkout master  # or whatever the main development branch is named
+$ git checkout master  # switches our localfs to master (or whatever the main development branch is named)
 $ git pull  # always ensure you have the latest
-$ git checkout -b my_branch
+$ git checkout -b my_branch  # the -b tells it to make the new branch from current revision
 $ git push --set-upstream origin my_branch
 ```
-You don't even need to remember that last command; if you try to do a "regular" push, `git` tells you exactly what to do:
+You don't need to remember that last command; I don't myself. If you try to do a "regular" push, `git` tells you exactly what to do:
 ```
 $ git push
 fatal: The current branch my_branch has no upstream branch.
@@ -472,7 +472,7 @@ To push the current branch and set the remote as upstream, use
 # 10:
 # Do some work
 $ git diff
-$ git commit
+$ git commit  # remember - this is NOT visible by coworkers
 # goto 10
 ```
 You probably want to throw in a `git push` at least once a day; hard drives fail sometimes.
