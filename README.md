@@ -10,7 +10,7 @@
             * [How To Fix in Subversion](#how-to-fix-in-subversion)
             * [How to Fix in git (Solution 1)](#how-to-fix-in-git-solution-1)
       * [The Stash](#the-stash)
-            * [How to Fix in git (Solution 2)](#how-to-fix-in-git-solution-2)
+         * [How to Fix in git (Solution 2)](#how-to-fix-in-git-solution-2)
          * [Another Stash Usage Example](#another-stash-usage-example)
       * [Committing Your Changes - add, fetch, pull, push, etc.](#committing-your-changes---add-fetch-pull-push-etc)
          * [git fetch](#git-fetch)
