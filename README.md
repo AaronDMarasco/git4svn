@@ -1,40 +1,5 @@
 # Yet Another git Guide for svn Users
-
 ## Table of Contents
-   * [Yet Another git Guide for svn Users](#yet-another-git-guide-for-svn-users)
-      * [Why? (An Intro)](#why-an-intro)
-      * [Terminology](#terminology)
-         * [References, Refs, Brances, and Tags (Oh My!)](#references-refs-brances-and-tags-oh-my)
-      * [What is "The Index?"](#what-is-the-index)
-         * [An Index Usage Example](#an-index-usage-example)
-            * [How To Fix in Subversion](#how-to-fix-in-subversion)
-            * [How to Fix in git (Solution 1)](#how-to-fix-in-git-solution-1)
-      * [The Stash](#the-stash)
-            * [How to Fix in git (Solution 2)](#how-to-fix-in-git-solution-2)
-         * [Another Stash Usage Example](#another-stash-usage-example)
-      * [Committing Your Changes - add, fetch, pull, push, etc.](#committing-your-changes---add-fetch-pull-push-etc)
-         * [git fetch](#git-fetch)
-         * [git merge](#git-merge)
-         * [git pull](#git-pull)
-         * [git push](#git-push)
-         * [git checkout](#git-checkout)
-            * [Branches - A Diversion](#branches---a-diversion)
-         * [git merge (part deux)](#git-merge-part-deux)
-      * [Squashing Commits - An Example](#squashing-commits---an-example)
-   * [Other Subjects](#other-subjects)
-      * [git help](#git-help)
-      * [git grep](#git-grep)
-      * [Git Anywhere](#git-anywhere)
-      * [git diff](#git-diff)
-         * [git difftool](#git-difftool)
-      * [git log](#git-log)
-      * [git mergetool](#git-mergetool)
-      * [git cherry-pick](#git-cherry-pick)
-   * [What's Not Here](#whats-not-here)
-   * [Other Resources](#other-resources)
-      * [Learning Git](#learning-git)
-      * [Tools and Setup](#tools-and-setup)
-      * [Special Thanks](#special-thanks)
 
 ## Why? (An Intro)
 Thanks to the COVID-19 pandemic, I'm stuck at home. My work team is migrating from `svn` to `git` and I was going to put together a brown bag or two for them, but since I'm doing it from home I'm able to put a copy on GitHub.
@@ -459,7 +424,7 @@ To push the current branch and set the remote as upstream, use
     git push --set-upstream origin my_branch
 ```
 
-### Do Stuff
+## Do Stuff
 ```
 # 10:
 # Do some work
@@ -469,7 +434,7 @@ $ git commit
 ```
 You probably want to throw in a `git push` at least once a day; hard drives fail sometimes.
 
-### Keep Up-to-Date
+## Keep Up-to-Date
 If you worry about missing major changes in `master`, it's a good idea to occasionally bring it into your branch. This helps minimize your conflicts later down the road, and ensures the code you test is "more realistic."
 ```
 $ git fetch
@@ -484,7 +449,7 @@ $ git merge master
 ```
 The latter ensures your local `master` is also in sync; this is useful if you want to keep an eye on your differences with `git diff master` as part of your development cycle.
 
-### Wrap It Up
+## Wrap It Up
 It's been a few days, and you're done. Your work has possibly even been peer reviewed, run through a test harness, etc.
 ```
 $ git checkout master
@@ -496,7 +461,7 @@ $ git push
 ```
 As noted above, we have options when merging; we need to decide if we will have a standard merge with every revision of `my_branch` or if we want to throw away the intermediate steps (squashed merge).
 
-### Clean The Repo
+## Clean The Repo
 There is now a branch we no longer care about in our repository, which isn't a big deal. The bigger concern is it's on the central copy we all share, and that can get cluttered very easily. Especially if we have a CI/CD infrastructure like Jenkins operating on _every_ branch in the repo!
 ```
 $ git branch -d my_branch
