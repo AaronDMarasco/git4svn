@@ -17,11 +17,13 @@
          * [git merge](#git-merge)
          * [git pull](#git-pull)
          * [git push](#git-push)
+         * [git revert](#git-revert)
          * [git checkout](#git-checkout)
             * [Branches - A Diversion](#branches---a-diversion)
          * [git merge (part deux)](#git-merge-part-deux)
       * [Squashing Commits - An Example](#squashing-commits---an-example)
    * [Other Subjects](#other-subjects)
+      * [Directed Acyclic Graph](#directed-acyclic-graph)
       * [git help](#git-help)
       * [git status](#git-status)
       * [git grep](#git-grep)
@@ -42,7 +44,6 @@
       * [Learning Git](#learning-git)
       * [Tools and Setup](#tools-and-setup)
       * [Special Thanks](#special-thanks)
-   * [TODO (Once back at work)](#todo-once-back-at-work)
 
 ## Why? (An Intro)
 Thanks to the COVID-19 pandemic, I'm stuck at home. My work team is migrating from `svn` to `git` and I was going to put together a brown bag or two for them, but since I'm doing it from home I'm able to put a copy on GitHub.
@@ -54,7 +55,7 @@ We know every technical thing has to have its own jargon and lingo, and there is
 | Term         | `svn`                                                                    | `git`                                                                                                                            |
 |--------------|--------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | working copy | your local checkout                                                      | N/A, but kinda the same                                                                                                          |
-| repository   | the One True Copy(TM)                                                    | a _copy_ of the codebase; some people (incorrectly) say "_the repository_" to indicate a central copy, _e.g._ the repo on GitHub |
+| repository   | the One True Copy(TM)                                                    | a _copy_ of the codebase with _all history included_; some people (incorrectly) say "_the repository_" to indicate a central copy, _e.g._ the repo on GitHub |
 | revision     | snapshot of the state of all files across all branches                   | snapshot of the file tree at any specific time                                                                                   |
 | branch       | another full copy of entire file tree                                    | a special type of _reference_ (see below)                                                                                        |
 | commit       | save your changes into a new revision for _everybody_ to immediately see | save your changes into a new revision _in your local repository_                                                                 |
@@ -278,6 +279,11 @@ Applying: Image tweaked
 
 This command simply sends your latest changes to the remote repository. If the remote has "moved on" past what your repo "knew" about, it will fail and require you to `pull` again. There are server-side hooks that may also reject your changes for various reasons (branch control, etc.). There is no equivalent in subversion, because `commit` handled that. **Don't forget to do this if you are expecting somebody else to see your code!**
 
+### git revert
+> git-revert - Revert some existing commits
+
+A "revert" is explicitly _an additional revision_ that will undo a previous revision. To maintain history, both the insertion and the deletion remain in the repo. If your code was ever pushed to a remote, this is what you should be doing. **It does not rollback to a previous revision.** If you never pushed the change and you want to rollback, there are tricks you can do with `git checkout` that can be found online.
+
 ### git checkout
 > git-checkout - Switch branches or restore working tree files
 
@@ -381,6 +387,9 @@ This will launch your editor. If your editor is git-savvy, it will note that you
 # Other Subjects
 This is stuff that I think is important / useful but I couldn't fit it elsewhere.
 
+## Directed Acyclic Graph
+AKA "DAG" is how the revisions are related to each other - see [Wikipedia](https://en.wikipedia.org/wiki/Directed_acyclic_graph) and the `git dag` add-on mentioned [elsewhere](#tools-and-setup). For example, the illustrations shown for "[git fetch](#git-fetch)" and "[git merge](#git-merge)" show DAGs.
+
 ## git help
 > git-help - Display help information about Git
 
@@ -394,14 +403,17 @@ This command is how you access the documentation for git, _e.g._:
 ## git status
 > git-status - Show the working tree status
 
-This one is used _all the time_ and you should probably scan through `git help status` to see how powerful it can be; I find myself giving it a path (or just `.`) often.
+This one is used _all the time_ and you should probably scan through `git help status` to see how powerful it can be.
+Some reminders:
+ * `--stat` can show _roughly_ how much you've deviated from what's currently checked in
+ * With no parameters, it shows the _entire_ repo, so you often want to give it a path (or just `.`)
 
 ## git grep
 > git-grep - Print lines matching a pattern
 
-If you're on a system that you cannot get `ripgrep` installed, then `git grep` is the next best thing. It's just like `grep -r` but will use all your available CPUs in parallel to search the repository database, which is insanely faster. By default it will only search actively-monitored files, but you can also ask it to search `--untracked` files as well.
+If you're on a system that you cannot get `ripgrep` installed, then `git grep` is the next best thing. It's just like `grep -r` but will use all your available CPUs in parallel to search the repository database, which is insanely faster. By default it will only search actively-monitored files, but you can also ask it to search `--untracked` files as well. I cannot emphasize enough how useful this capability is.
 
-The options I prefer for `grep` are listed in the config info below so I can just do `git g <expression>`.
+The options I prefer for `grep` are listed [in the config info below](#tools-and-setup) so I can just do `git g <expression>`.
 
 ## Git Anywhere
 Because a repository is "only" a subdirectory `.git` at the top-level of a directory tree, you can put a git repository _anywhere_ you think having history and the ability to rollback would be useful. Some examples:
@@ -526,6 +538,7 @@ At this point, I could still `git checkout 3fb9dd3` to get it back. It won't be 
 # What's Not Here
 There are some other things I've already documented on an internal wiki for my team that may interest public users; treat this as a breadcrumb that you might want to search the internet for more information:
 * Using `git bisect` to automate finding where something is broken
+  * This is important because unlike svn, git revisions are unpredictable, so it is non-trivial to say "I want a revision halfway between then and now"
 * Using `git bundle` when traveling and needing a minimal set of files with you
 
 # Other Resources
@@ -542,10 +555,14 @@ I started learning git back in 2015, and I noted that the following sites were g
 In my previous office, we had "free reign" so I was able to use any tools I wanted. In a perfect world, I'd still have access to them all:
  * `git dag` - from [git-cola](https://git-cola.github.io/) (also has a nice diff viewer)
  * `git lg` - an alias I use daily - possibly [from here](https://coderwall.com/p/euwpig/a-better-git-log) and old notes of mine are below
- * Bash prompt support
+ * [Powerline](https://github.com/powerline/powerline) looks great (but I've had problems with it if your git repo is on an NFS mount, _e.g._ under your `/home/` in an enterprise environment)
+   * `mkdir ~/.config/powerline`
+   * `cp /etc/xdg/powerline/config.json ~/.config/powerline/`
+   * `vim ~/.config/powerline/config.json`
+     * Change `shell:theme` from `default` to `default_leftonly`
+ * (Manual) Bash prompt support
    * Found in various locations but part of git's "contributed" - see [this git page](https://git-scm.com/book/id/v2/Appendix-A%3A-Git-in-Other-Environments-Git-in-Bash) for more
    * Source is [here](https://github.com/git/git/blob/master/contrib/completion/git-prompt.sh)
-   * For CentOS7, it was at `/usr/share/git-core/contrib/completion/git-prompt.sh` after installing (???)
    * Add the following to your `~/.bashrc` file to get immediate feedback from the shell concerning the status of your working copy:
 ```
 if [ -e /usr/share/git-core/contrib/completion/git-prompt.sh ]; then
@@ -565,6 +582,10 @@ fi
     g = grep --break --heading --line-number -i
     lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --full-history --simplify-merges
 ```
+* You might want to set your "grep" settings as well:
+  * `git config --global grep.lineNumber true` - makes it easy to copy-paste file names and jump to the line in editos
+  * `git config --global grep.extendedRegexp true` - "better" regex support
+  * `git config --global grep.patternType perl` - "best" regex support
 * `meld` as your merge resolver (when conflicts occur, running `git mergetool` will launch)
 ```
 $ git config --global diff.tool meld
@@ -575,9 +596,3 @@ $ git config --global merge.tool meld
  * [gh-md-toc](https://github.com/ekalinin/github-markdown-toc) for the (offline) generation of the Table of Contents
  * [Tables Generator](https://www.tablesgenerator.com/markdown_tables) for online table generation
  * [WebGraphviz](http://www.webgraphviz.com/) for online Graphviz graphics
-
-# TODO (Once back at work)
-* Name of other prompt program?
-* Verify `git lg`
-* Special `git grep` options / alias?
-* What CentOS RPM provided that contributed script? Tagged '???'
