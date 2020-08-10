@@ -73,7 +73,7 @@ As noted above, a revision is a snapshot of _everything_ at a specific time. Eac
 | branch name | `.git/refs/heads/` | Points to the `HEAD` of the given branch. A new commit to this ref will move ("follow") this to the new revision. |
 | tag         | `.git/refs/tags/`  | Points to a specific revision. If currently `HEAD` of a branch, it will _not_ move on a new commit.               |
 
-_Tags_ are special references that don't move, similar to subversion's tags. If you `cat` any of the files listed above, _e.g._ `.git/refs/heads/master`, you will see it is simply the 40-hex SHA-1 hash and a newline. 
+_Tags_ are special references that don't move, similar to subversion's tags. If you `cat` any of the files listed above, _e.g._ `.git/refs/heads/master`, you will see it is simply the 40-hex SHA-1 hash and a newline.
 
 Often the shortened version of the hash is unique enough (7 chars), and you can use "`R^N`" to say "N references before R" (no N means 1). References can be used in _many_ places on the command line and are very useful. For example, if I want to see what files were changed in the last commit, knowing that the most recent revision is always `HEAD`:
 ```
@@ -155,7 +155,7 @@ You fix the two magic files that needed to be fixed. A changeset is effectively 
 * `git diff --cached` shows you _only_ the changes needed to fix your coworker's problem
 * `git commit` will commit _only_ those changes, with all your other files still modified
 
-Hopefully this has shown you some of the power of the index. But what if somebody made changes on the central repo, and you haven't been keeping up to date? Then your `push` might fail. 
+Hopefully this has shown you some of the power of the index. But what if somebody made changes on the central repo, and you haven't been keeping up to date? Then your `push` might fail.
 
 ## The Stash
 #### How to Fix in git (Solution 2)
@@ -296,7 +296,7 @@ $ git checkout branchA
 Switched to branch 'branchA'
 Your branch is up to date with 'origin/branchA'.
 ```
-When you want to create a new branch, you can add `-b` to the command and it will branch from wherever you are, including a "dirty" workspace. 
+When you want to create a new branch, you can add `-b` to the command and it will branch from wherever you are, including a "dirty" workspace.
 
 But yes, you can `checkout` a single file (and it will auto-`add`, which I don't like).
 ```
@@ -331,10 +331,10 @@ It's difficult to emphasize how much of a life-changer this can be until you act
 
 ### git merge (part deux)
 There are actually three kinds of merges, and you should be familiar with them because they make things a lot easier to follow if used properly.
-1. The first kind of merge is a "fast-forward" merge:  
-![](img/after_fetch.png)  
-Since there are no changes in the local repository between what the upstream considers `branchA` and what we have as `branchA`, we can simply "fast forward" the reference to the new revision:  
-![](img/after_merge.png)  
+1. The first kind of merge is a "fast-forward" merge:
+![](img/after_fetch.png)
+Since there are no changes in the local repository between what the upstream considers `branchA` and what we have as `branchA`, we can simply "fast forward" the reference to the new revision:
+![](img/after_merge.png)
 ```
 $ git pull
 ...
@@ -346,17 +346,17 @@ Current branch branchA is up to date.
 If you think this is what should happen, you can use `git merge --ff-only` to ensure that's the case. If, for some reason, you find this unacceptable, you can use the `--no-ff` flag.
 
 2. The second kind of merge is a "standard" merge:
-![](img/remote_changes.png)  
+![](img/remote_changes.png)
 For this, both repositories (ours and the remote) have new revisions that we both consider part of `branchA`, so we need to create a new revision that merges them. (Again, this wouldn't happen with `autosetuprebase`, but you could imagine two different branches instead; it's the same.)
-![](img/remote_merged.png)  
+![](img/remote_merged.png)
 Of course, this still needs to be _pushed_ as noted above.
 When performing this kind, I highly recommend using the `--no-commit` flag so you can review what the merge _would have done_ and then manually `git commit`; it will autopopulate the commit message properly for a merge.
 3. The last kind of merge is a "squashed" merge:
-![](img/squashed_merge.png)  
+![](img/squashed_merge.png)
 In this image, there's a dotted arrow between `7589a237e` and `2c57a9eec` because the merge happened and all the data is there, but the metadata _doesn't_ record it. The log message is (by default) a culmination of all the changesets in between. At this point, all the "my_work" and revisions `7589a237e` are now _orphans_ and are subject to garbage collection in the future. A much more detailed example of squashed merges (I'm a huge fan of them) is below.
 
 ## Squashing Commits - An Example
-Squashing commits is a useful way to keep related changes within a single changeset for later examination. There are good arguments both _for_ squashing ("no need to see how the sausage was made and these intermediate changesets that make no sense on their own") and _against_ ("the way this document was tweaked is unique enough that I might want to reference that specific changeset later"). 
+Squashing commits is a useful way to keep related changes within a single changeset for later examination. There are good arguments both _for_ squashing ("no need to see how the sausage was made and these intermediate changesets that make no sense on their own") and _against_ ("the way this document was tweaked is unique enough that I might want to reference that specific changeset later").
 
 The following is an example of merging in a branch "`feature--cool-intro`" from the top-level of the repository:
 * `git checkout master`
@@ -540,6 +540,8 @@ There are some other things I've already documented on an internal wiki for my t
 * Using `git bisect` to automate finding where something is broken
   * This is important because unlike svn, git revisions are unpredictable, so it is non-trivial to say "I want a revision halfway between then and now"
 * Using `git bundle` when traveling and needing a minimal set of files with you
+
+Also, I just didn't know where to fit it - a `remote` can be _any git repository_, which includes a clone in another directory on the local filesystem!
 
 # Other Resources
 ## Learning Git
