@@ -553,7 +553,7 @@ This example is fairly automatic; if you can simply run a test script to say goo
 Note: This is a real example with hashes from a private git repo and anonymized
 
 1. Write a script that will be able to tell if a specific version works or not. Here's my example script that I manually tested on the known good and known bad. Basically, my program would crash nearly immediately as the failure, so I launch it in the background and then check on it in five seconds.
-    ```
+```
 #!/bin/bash -x
 set -e
 cd common/build # git bisect must be run from the top-level of the repo
@@ -571,7 +571,7 @@ wait
 2. Determine where you want to start and end the search. In my example, I know that my branch "`adm`" has something broken, while "`master`" is good (_n.b._ `master` hasn't changed since I branched off).
 
 3. Run it!
-    ```
+```
 user@host$ git bisect start adm master
 Bisecting: 29 revisions left to test after this (roughly 5 steps)
 [3b30109-fullhash] [commit message]
