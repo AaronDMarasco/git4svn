@@ -4,7 +4,7 @@
       * [Table of Contents](#table-of-contents)
       * [Why? (An Intro)](#why-an-intro)
       * [Terminology](#terminology)
-         * [References, Refs, Brances, and Tags (Oh My!)](#references-refs-brances-and-tags-oh-my)
+         * [References, Refs, Branches, and Tags (Oh My!)](#references-refs-brances-and-tags-oh-my)
       * [What is "The Index?"](#what-is-the-index)
          * [An Index Usage Example](#an-index-usage-example)
             * [How To Fix in Subversion](#how-to-fix-in-subversion)
@@ -72,7 +72,7 @@ We know every technical thing has to have its own jargon and lingo, and there is
 
 A full reference is available with `git help gitglossary`.
 
-### References, Refs, Brances, and Tags (Oh My!)
+### References, Refs, Branches, and Tags (Oh My!)
 As noted above, a revision is a snapshot of _everything_ at a specific time. Each of these snapshots, when combined with their metadata (author, comment, ancestors, etc.), is hashed into a SHA-1 hash to create the unique identifier to label that revision.
 
 | Reference   | Location           | Use                                                                                                               |
@@ -120,7 +120,7 @@ README.md
 I don't have them in a git repository yet, so I will create one. Details omitted, because it's easy to search and not relevant here. Since the files are new to the repository, I need to `git add` them. What actually happens when I do that?
  * `git` begins to create a new revision, called _the index_, and adds the contents of `LICENSE` and `README.md` to it _immediately_.
 
-Why did I emphasise the word _immediately_? Because `svn add` says "from now on, I need to start watching `LICENSE` and `README.md`", while `git add` _stages_ the contents of the files _as it is right now_ in the index. If I then do `echo FOO >> README.md`, a commit in `svn` would have "FOO" added to the end of the file. In `git`, **the added "FOO" won't be committed**. I'll try to illustrate it a little:
+Why did I emphasize the word _immediately_? Because `svn add` says "from now on, I need to start watching `LICENSE` and `README.md`", while `git add` _stages_ the contents of the files _as it is right now_ in the index. If I then do `echo FOO >> README.md`, a commit in `svn` would have "FOO" added to the end of the file. In `git`, **the added "FOO" won't be committed**. I'll try to illustrate it a little:
 
 ![](img/repo_index.png)
 
@@ -268,7 +268,7 @@ $ git diff origin/branchA README.md
 ```
 Because (don't forget) your local repository has _all the information_, and the _reference_ to what the upstream has for `branchA` is `origin/branchA`.
 
-_Note_: I'm handwaving here a bit, because I hope you set `autosetuprebase` as noted in the [Setup section below](#tools-and-setup). If you did, then it's actually doing a "`git rebase`" in between the `fetch` and `merge`. This makes our repo a lot cleaner and easier to follow. Essentially, it "rolls back" all your changes since you last synchronized to the upstream. Then, it updates your branch to match what is upstream. Once that is complete, it re-applies your changesets but based off of the "new" branch. If this is able to happen cleanly, then a merge revision was never needed. It will clearly tell you when it is doing it as well:
+_Note_: I'm hand-waving here a bit, because I hope you set `autosetuprebase` as noted in the [Setup section below](#tools-and-setup). If you did, then it's actually doing a "`git rebase`" in between the `fetch` and `merge`. This makes our repo a lot cleaner and easier to follow. Essentially, it "rolls back" all your changes since you last synchronized to the upstream. Then, it updates your branch to match what is upstream. Once that is complete, it re-applies your changesets but based off of the "new" branch. If this is able to happen cleanly, then a merge revision was never needed. It will clearly tell you when it is doing it as well:
 ```
 $ git pull --rebase  # This is your default if you set autosetuprebase
 remote: Enumerating objects: 8, done.
@@ -660,7 +660,7 @@ I started learning git back in 2015, and I noted that the following sites were g
  * A [one-hour preview talk](https://www.youtube.com/watch?v=8dhZ9BXQgc4) from 2007 by Randal Schwartz (of perl fame)
    * Great intro, including around 3:20 when he simply asks "What is git?" and notes it tracks **"Changes to a tree of files over time"**
   * Ignore what he says about `git rebase` - in my experience, it's rarely used
-* [The Thing About Git](https://tomayko.com/blog/2008/the-thing-about-git) by Rtan Tomayko was a good intro to the usage side
+* [The Thing About Git](https://tomayko.com/blog/2008/the-thing-about-git) by Ryan Tomayko was a good intro to the usage side
 * [Think Like (a) Git](http://think-like-a-git.net/) by Sam Livingston-Gray was an **excellent** site that I used that really helped me understand the (graph) theory, the way it all comes together
 * [Git Immersion](http://gitimmersion.com/index.html) by Neo Innovation is a **great** hands-on lab-like approach to learning
 
@@ -696,7 +696,7 @@ fi
     lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --full-history --simplify-merges
 ```
 * You might want to set your "grep" settings as well:
-  * `git config --global grep.lineNumber true` - makes it easy to copy-paste file names and jump to the line in editos
+  * `git config --global grep.lineNumber true` - makes it easy to copy-paste file names and jump to the line in editors
   * `git config --global grep.extendedRegexp true` - "better" regex support
   * `git config --global grep.patternType perl` - "best" regex support
 * `meld` as your merge resolver (when conflicts occur, running `git mergetool` will launch)
