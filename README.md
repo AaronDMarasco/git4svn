@@ -603,7 +603,7 @@ This section is fairly esoteric; you might say "`git` is always offline unless I
     2. The `my_branch.bundle` is the filename to dump to
     3. The "`my_branch`" is _any_ git reference, in this case the `HEAD` of your chosen branch
         * If you wanted to make sure you had the latest, you can add another "`master`" to the end if you'd like
-        * You can add as many branches as you would like; feel free to tweak as needed and see the filesize trade-off
+        * You can add as many branches as you might need; feel free to tweak as needed and see the filesize trade-off
 3. Check what you've done
     * `git bundle list-heads my_branch.bundle`
         * Should show your current `HEAD`'s hash with `refs/heads/my_branch`
@@ -632,7 +632,7 @@ This section is fairly esoteric; you might say "`git` is always offline unless I
     * Compare the hash from `git log -1` to `git bundle list-heads my_branch_diff.bundle`
 3. Upload `my_branch_diff.bundle` to dropbox, USB key, etc.
 
-**Warning**: If you used `git stash` and didn't save the final results into a **named** branch and then bundle, those changes **will be lost**!
+**Warning**: If you used `git stash` and didn't save the final results into a **named** branch and then `bundle`, those changes **will be lost**!
 
 ### Importing Your Changes
 1. Download `my_branch_diff.bundle` to your machine
