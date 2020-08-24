@@ -553,7 +553,7 @@ This example is fairly automatic; if you can simply run a test script to say goo
 Note: This is a real example with hashes from a private git repo and anonymized
 
 1. Write a script that will be able to tell if a specific version works or not. Here's my example script that I manually tested on the known good and known bad. Basically, my program would crash nearly immediately as the failure, so I launch it in the background and then check on it in five seconds.
-```
+    ```
 #!/bin/bash -x
 set -e
 cd common/build # git bisect must be run from the top-level of the repo
@@ -571,7 +571,7 @@ wait
 2. Determine where you want to start and end the search. In my example, I know that my branch "`adm`" has something broken, while "`master`" is good (_n.b._ `master` hasn't changed since I branched off).
 
 3. Run it!
-```
+    ```
 user@host$ git bisect start adm master
 Bisecting: 29 revisions left to test after this (roughly 5 steps)
 [3b30109-fullhash] [commit message]
@@ -585,11 +585,11 @@ Author, Date, etc.
 ...
 bisect run success
 ```
-Be sure to check the help with `git help bisect` for lots of interesting options, like the ability to skip a certain revision if it is _totally_ unusable but independently of your actual problem. For example, after running the above, I added "`|| exit 125`" to the `make` calls to indicate that this revision should be skipped but _not_ blamed because I was also messing with `Makefile`s previously. I could have also forced the working `Makefile` into every check by adding `git checkout adm Makefile` to my testing script.
+    Be sure to check the help with `git help bisect` for lots of interesting options, like the ability to skip a certain revision if it is _totally_ unusable but independently of your actual problem. For example, after running the above, I added "`|| exit 125`" to the `make` calls to indicate that this revision should be skipped but _not_ blamed because I was also messing with `Makefile`s previously. I could have also forced the working `Makefile` into every check by adding `git checkout adm Makefile` to my testing script.
 
 4. Fix it
-You now know what was broken, and you fix it. But you now have a patch for a revision from three weeks ago - what to do with that?
-Make a branch from the first broken (`git checkout -b my_hotfix`) and then commit the patch (`git commit -am "Hotfix"`). Switch back to the original branch (`git checkout adm`) and then bring in the patch (`git merge --no-commit my_hotfix ; git merge --reset`). From there, manipulate as needed. When done, delete the temporary branch (`git branch -D my_hotfix`) since nobody needs it / cares any more.
+    You now know what was broken, and you fix it. But you now have a patch for a revision from three weeks ago - what to do with that?
+    Make a branch from the first broken (`git checkout -b my_hotfix`) and then commit the patch (`git commit -am "Hotfix"`). Switch back to the original branch (`git checkout adm`) and then bring in the patch (`git merge --no-commit my_hotfix ; git merge --reset`). From there, manipulate as needed. When done, delete the temporary branch (`git branch -D my_hotfix`) since nobody needs it / cares any more.
 
 ## Working Offline
 This section is fairly esoteric; you might say "`git` is always offline unless I tell it to `fetch` or something." That would be correct, but sometimes you might have to work only with a subset of the repository; for example you don't want to have the _entire_ repository's history taking up space in your dropbox. It was written as an example where you go on a trip to a customer location and find a bug in the code that you can easily fix. "What now?"
