@@ -585,7 +585,6 @@ Author, Date, etc.
 ...
 bisect run success
 ```
-
 Be sure to check the help with `git help bisect` for lots of interesting options, like the ability to skip a certain revision if it is _totally_ unusable but independently of your actual problem. For example, after running the above, I added "`|| exit 125`" to the `make` calls to indicate that this revision should be skipped but _not_ blamed because I was also messing with `Makefile`s previously. I could have also forced the working `Makefile` into every check by adding `git checkout adm Makefile` to my testing script.
 
 4. Fix it
