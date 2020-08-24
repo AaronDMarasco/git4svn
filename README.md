@@ -4,7 +4,7 @@
       * [Table of Contents](#table-of-contents)
       * [Why? (An Intro)](#why-an-intro)
       * [Terminology](#terminology)
-         * [References, Refs, Branches, and Tags (Oh My!)](#references-refs-brances-and-tags-oh-my)
+         * [References, Refs, Branches, and Tags (Oh My!)](#references-refs-branches-and-tags-oh-my)
       * [What is "The Index?"](#what-is-the-index)
          * [An Index Usage Example](#an-index-usage-example)
             * [How To Fix in Subversion](#how-to-fix-in-subversion)
@@ -40,7 +40,7 @@
       * [Wrap It Up](#wrap-it-up)
       * [Clean The Repo](#clean-the-repo)
    * [Special Examples](#special-examples)
-      * [Git Bisect](#git-bisect)
+      * [Unbreak Your Code](#unbreak-your-code)
          * [Step-By-Step example](#step-by-step-example)
       * [Working Offline](#working-offline)
          * [Before You Leave](#before-you-leave)
@@ -544,7 +544,7 @@ Deleted branch my_branch (was 3fb9dd3).
 At this point, I could still `git checkout 3fb9dd3` to get it back. It won't be there forever; there is a garbage collector.
 
 # Special Examples
-## Git Bisect
+## Unbreak Your Code
 If something broke and you're not sure where, you want to use `git bisect`. In subversion, if you knew `r200` was broken, and you're sure that `r100` worked, you could manually split the problem space and say "let's check `r150`!" This is impossible in git when there's no way to figure out what is halfway between `6fb166f` and `e29fff0` without more metadata. That's where `git bisect` comes in.
 
 This example is fairly automatic; if you can simply run a test script to say good/bad, then it can be fully automated! If not, you can manually tell `git` "OK, this one worked" etc. You can find more resources online or under `git help bisect`.
@@ -568,7 +568,7 @@ kill -9 %%
 wait
 ```
 
-2. Determine where you want to start and end the search. In my example, I know that my branch "`adm`" has something broken, while "`master`" is good (n.b. `master` hasn't changed since I branched off).
+2. Determine where you want to start and end the search. In my example, I know that my branch "`adm`" has something broken, while "`master`" is good (_n.b._ `master` hasn't changed since I branched off).
 
 3. Run it!
 ```
@@ -586,11 +586,10 @@ Author, Date, etc.
 bisect run success
 ```
 
-Be sure to check the help with `git help bisect` for lots of interesting options, like the ability to skip a certain revision if it is _totally_ unusable but independently of your actual problem. For example, after running the above, I added "`|| exit 125`" to the `make` calls to indicate that this revision should be skipped but _not_ blamed.
+Be sure to check the help with `git help bisect` for lots of interesting options, like the ability to skip a certain revision if it is _totally_ unusable but independently of your actual problem. For example, after running the above, I added "`|| exit 125`" to the `make` calls to indicate that this revision should be skipped but _not_ blamed because I was also messing with `Makefile`s previously. I could have also forced the working `Makefile` into every check by adding `git checkout adm Makefile` to my testing script.
 
 4. Fix it
 You now know what was broken, and you fix it. But you now have a patch for a revision from three weeks ago - what to do with that?
-
 Make a branch from the first broken (`git checkout -b my_hotfix`) and then commit the patch (`git commit -am "Hotfix"`). Switch back to the original branch (`git checkout adm`) and then bring in the patch (`git merge --no-commit my_hotfix ; git merge --reset`). From there, manipulate as needed. When done, delete the temporary branch (`git branch -D my_hotfix`) since nobody needs it / cares any more.
 
 ## Working Offline
@@ -601,37 +600,37 @@ This section is fairly esoteric; you might say "`git` is always offline unless I
 ### Before You Leave
 1. Decide which branch you want your changes to be based on. In this example, we'll say "`my_branch`".
 2. Back up the branch using "`git bundle`":
-  1. `git bundle create my_branch.bundle my_branch`
-  2. The `my_branch.bundle` is the filename to dump to
-  3. The "`my_branch`" is _any_ git reference, in this case the `HEAD` of your chosen branch
-    * If you wanted to make sure you had the latest, you can add another "`master`" to the end if you'd like
-    * You can add as many branches as you would like; feel free to tweak as needed and see the filesize trade-off
+    1. `git bundle create my_branch.bundle my_branch`
+    2. The `my_branch.bundle` is the filename to dump to
+    3. The "`my_branch`" is _any_ git reference, in this case the `HEAD` of your chosen branch
+        * If you wanted to make sure you had the latest, you can add another "`master`" to the end if you'd like
+        * You can add as many branches as you would like; feel free to tweak as needed and see the filesize trade-off
 3. Check what you've done
-  * `git bundle list-heads my_branch.bundle`
-    * Should show your current `HEAD`'s hash with `refs/heads/my_branch`
-    * Test run the next section somewhere
+    * `git bundle list-heads my_branch.bundle`
+        * Should show your current `HEAD`'s hash with `refs/heads/my_branch`
+        * Test run the next section somewhere
 4. Upload `my_branch.bundle` to dropbox, USB key, etc.
 
 ### On the Road
 1. Download `my_branch.bundle` to working PC
 2. Clone a new working copy from the bundle
-  1. `git clone /tmp/my_branch.bundle`
-    * It's OK if it says something like "`warning: remote HEAD refers to nonexistent ref, unable to checkout.`"
-  2. `cd my_branch`
-  3. `git branch -av`
-    * Should show all refs you bundled, _e.g._ `my_branch` and `master`
-  4. `git checkout my_branch`
-    * Now all your files should be there
+    1. `git clone /tmp/my_branch.bundle`
+        * It's OK if it says something like "`warning: remote HEAD refers to nonexistent ref, unable to checkout.`"
+    2. `cd my_branch`
+    3. `git branch -av`
+        * Should show all refs you bundled, _e.g._ `my_branch` and `master`
+    4. `git checkout my_branch`
+        * Now all your files should be there
 3. Make changes / do work
-  * `git commit` to your heart's content
+    * `git commit` to your heart's content
 
 ### Done with Changes
 1. Save all your changes as a _new_ bundle
-  * `git bundle create my_branch_diff.bundle origin/my_branch..HEAD`
-    * The resulting file will be much smaller - only the diffs you've made!
-    * Again, the last argument might include other things. If space is not an issue, you can just put the branch name again and get them all.
+    * `git bundle create my_branch_diff.bundle origin/my_branch..HEAD`
+        * The resulting file will be much smaller - only the diffs you've made!
+        * Again, the last argument might include other things. If space is not an issue, you can just put the branch name again and get them all.
 2. Verify you've got what you think
-  * Compare the hash from `git log -1` to `git bundle list-heads my_branch_diff.bundle`
+    * Compare the hash from `git log -1` to `git bundle list-heads my_branch_diff.bundle`
 3. Upload `my_branch_diff.bundle` to dropbox, USB key, etc.
 
 **Warning**: If you used `git stash` and didn't save the final results into a **named** branch and then bundle, those changes **will be lost**!
@@ -641,10 +640,10 @@ This section is fairly esoteric; you might say "`git` is always offline unless I
 2. Change directory to your "daily" working copy
 3. Make sure your workspace is clean
 4. `git bundle unbundle my_branch_diff.bundle`
-  * Note the reference it gave you here, _e.g._ `5bab64db350fcf45033481191a976164e8551538 HEAD`
+    * Note the reference it gave you here, _e.g._ `5bab64db350fcf45033481191a976164e8551538 HEAD`
 5. `git merge --no-commit 5bab64db350fcf45033481191a976164e8551538`
-  * If there were no changes since you left, it will say "Fast-forward" and you're done; `git push` to the server
-  * If there were changes, you are in a "normal" merge situation to be handled appropriately
+    * If there were no changes since you left, it will say "Fast-forward" and you're done; `git push` to the server
+    * If there were changes, you are in a "normal" merge situation to be handled appropriately
 
 # What's Not Here
 There are some other things I've already documented on an internal wiki for my team that may interest public users; treat this as a breadcrumb that you might want to search the internet for more information:
