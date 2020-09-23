@@ -60,6 +60,7 @@ There are many sites out there that cover similar things, but many seem to be "h
 
 ## Terminology
 We know every technical thing has to have its own jargon and lingo, and there is some overlap between the two. I'd like to make sure we're always on the same page. Here a few key terms that we've been using already with svn and how they apply along with a few extra you'll need:
+
 | Term         | `svn`                                                                    | `git`                                                                                                                            |
 |--------------|--------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
 | working copy | your local checkout                                                      | N/A, but kinda the same                                                                                                          |
