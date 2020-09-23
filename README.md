@@ -251,6 +251,8 @@ nothing to commit, working tree clean
 ```
 ![](img/after_fetch.png)
 
+By adding `--prune` to the end of `fetch` (or `pull`), any remote branches that no longer exist will be removed from your local repository. This is often what you want, so it is referenced below as a recommended configuration.
+
 ### git merge
 > git-merge - Join two or more development histories together
 
@@ -703,6 +705,11 @@ fi
 $ git config --global diff.tool meld
 $ git config --global merge.tool meld
 ```
+* If your organization has lots of ephemeral branches that are pushed to the remote server, you most likely want to always "[prune](https://stackoverflow.com/a/40842589/836748)" on a `fetch` or `pull` to remove stale references to dead branches:
+```
+git config --global fetch.prune true
+```
+
 ## Special Thanks
  * [Dillinger](https://dillinger.io/) an online Markdown editor
  * [gh-md-toc](https://github.com/ekalinin/github-markdown-toc) for the (offline) generation of the Table of Contents
