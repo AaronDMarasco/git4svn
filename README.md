@@ -655,6 +655,8 @@ There are some other things I've already documented on an internal wiki for my t
 
 Also, I just didn't know where to fit it - a `remote` can be _any git repository_, which includes a clone in another directory on the local filesystem!
 
+Lastly, it seems newer versions of `git` are using some aliases like "`restore`" to be more user-friendly. These are not yet in the Linux distro we use, so I haven't migrated this document to reference them. Pull requests referencing these alternate methods are welcome!
+
 # Other Resources
 ## Learning Git
 I started learning git back in 2015, and I noted that the following sites were great help, and I highly recommend them still:
