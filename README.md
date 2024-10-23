@@ -694,9 +694,41 @@ fi
 [branch]
     autosetuprebase = always
 [alias]
-    last = log -1 HEAD
+    # bav: Show all branches, including if "gone" from remote and if you are ahead/behind remote
+    bav = branch -av
+    # bavv: Even more verbose (will tell you names of the remote branches)
+    bavv = branch -avv
+    # cm: Commit with a message
+    cm = commit -m
+    # diffr: Show the difference made by a specific revision, e.g. HEAD
+    diffr = "!f() { v=$1; shift || :; git diff "$v"^.."$v" $a; }; f"
+    # dc: Show diff of index (what you are about to commit)
+    dc = diff --cached
+    # dcs: Show diff of index (stats)
+    dcs = diff --cached --stat
+    # ds: Show diff of working copy (stats)
+    ds = diff --stat
+    # filelog / flog: Show logs (optionally of a file) along with the patches that each commit applied
+    filelog = log -p
+    flog = log -p
+    # find: find a file at the current directory or deeper (using standard grep) starting in current directory
+    find = "!f() { cd ${GIT_PREFIX:-./}; git ls-files | grep -i $@; }; f"
+    # g: Quick grep with easy to copy/paste filenames
     g = grep --break --heading --line-number -i
+    # gfind: global find - anywhere in the git repo
+    gfind = "!f() { git ls-files | grep -i $@; }; f"
+    # gi: grep case ignored
+    gi = grep -i
+    # gn: grep case ignored but only list file names found
+    gn = grep --break --heading --line-number -i --name-only
+    # last: Show the last log entry
+    last = log -1 HEAD
+    # lg/lga/lgs: Show a pretty graph of the logs of the current branch / all branches / + stat of each changeset
     lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --full-history --simplify-merges
+    lga = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --full-history --simplify-merges --all
+    lgs = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --full-history --simplify-merges --stat
+    # tips: Show the tip of every branch in the repository (local or not)
+    tips = "!f() { git show -s --oneline --decorate $(git show-branch --independent -a); }; f"
 ```
 * You might want to set your "grep" settings as well:
   * `git config --global grep.lineNumber true` - makes it easy to copy-paste file names and jump to the line in editors
